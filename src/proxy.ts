@@ -1,32 +1,51 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { supabaseConfiguredOrWarn } from "@/lib/supabase/config";
 import { updateSession } from "@/lib/supabase/middleware";
 
 /**
  * Next.js 16 renamed the `middleware` file convention to `proxy`.
  *
- * Phase 0: keep the Supabase session fresh on every page request.
- * Route protection and onboarding redirects land here in Phase 1.
+ * Two jobs: keep the Supabase session fresh, and bounce signed-out visitors
+ * away from private routes. Fine-grained rules (is this user onboarded? does
+ * this user own this pet?) belong in the page, where the answer is cheap and
+ * typed; the proxy only does the coarse check on every request.
  */
+
+/** Routes that require a signed-in user. Prefix match on path segments. */
+const PROTECTED_PREFIXES = ["/onboarding", "/settings"];
+
+function isProtected(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 export async function proxy(request: NextRequest) {
-  // Without Supabase credentials there is no session to refresh. In
-  // development we warn and let the request through so the UI is still
-  // browsable on a fresh clone; in production a missing URL is a hard error.
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        "NEXT_PUBLIC_SUPABASE_URL is not set. Auth cannot work — see .env.example.",
-      );
-    }
-
-    console.warn(
-      "[proxy] Supabase env vars missing — skipping session refresh. Copy .env.example to .env.local.",
-    );
-
+  // Without Supabase credentials there is no session to refresh. The request
+  // passes through as signed out so a fresh clone is still browsable.
+  if (!supabaseConfiguredOrWarn()) {
     return NextResponse.next({ request });
   }
 
-  const { response } = await updateSession(request);
+  const { response, user } = await updateSession(request);
+  const { pathname, search } = request.nextUrl;
+
+  if (!user && isProtected(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    url.search = `?next=${encodeURIComponent(`${pathname}${search}`)}`;
+
+    const redirect = NextResponse.redirect(url);
+
+    // Carry over any cookies the session refresh just set, otherwise the
+    // rotated refresh token is lost on this hop.
+    for (const cookie of response.cookies.getAll()) {
+      redirect.cookies.set(cookie);
+    }
+
+    return redirect;
+  }
 
   return response;
 }
