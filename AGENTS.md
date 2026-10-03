@@ -85,6 +85,15 @@ commit message.
 - Lists paginate with a keyset cursor on `(created_at, id)`. Cursors arrive
   from the client and are interpolated into a PostgREST filter, so they are
   Zod-validated first.
+- Toggles (like, follow) use `useOptimistic` inside a transition and return the
+  settled state. A failed write needs no rollback code — the optimistic value
+  reverts on its own when the transition ends without the real state moving.
+- Counts come from PostgREST aggregate embeds (`likes:likes(count)`), not from
+  counter columns. Per-viewer state ("did I like this?") is a second query over
+  the page's ids, never a filter inside the main select.
+- Do not call `setState` inside an effect — `react-hooks/set-state-in-effect`
+  rejects it. To reset a field after a successful action, adjust state during
+  render guarded by a "have I handled this state object yet" check.
 
 ## Build plan
 
@@ -100,7 +109,7 @@ wait for approval.
    post detail, cursor pagination (`created_at` + `id`), never offset. ✅
    (The `follows` table shipped here because the feed needs it; Phase 4 adds
    the follow/unfollow UI and the counts.)
-4. Social — likes (optimistic), comments, follow/unfollow pets, counts.
+4. Social — likes (optimistic), comments, follow/unfollow pets, counts. ✅
 5. Lost & Found — reports with photo/area/last-seen, filters, detail page,
    "Reunited" state.
 6. Polish & ship — notifications, search, infinite scroll, SEO + OG images,

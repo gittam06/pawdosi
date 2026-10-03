@@ -13,8 +13,10 @@ import { genderLabel } from "@/config/pets";
 import { getCurrentUser } from "@/lib/auth";
 import { avatarUrl } from "@/lib/cloudinary-url";
 import { formatAge, formatBirthDate } from "@/lib/pet-age";
+import { FollowButton } from "@/components/pets/follow-button";
 import { getPetBySlug } from "@/lib/pets";
 import { countPetFollowers, countPetPosts, listPetPosts } from "@/lib/posts";
+import { isFollowingPet } from "@/lib/social";
 
 type PetPageProps = { params: Promise<{ slug: string }> };
 
@@ -51,12 +53,15 @@ export default async function PetPage({ params }: PetPageProps) {
 
   if (!pet) notFound();
 
-  const [user, followers, postCount, postPage] = await Promise.all([
-    getCurrentUser(),
-    countPetFollowers(pet.id),
-    countPetPosts(pet.id),
-    listPetPosts(pet.id, null),
-  ]);
+  const [user, followers, postCount, postPage, isFollowing] = await Promise.all(
+    [
+      getCurrentUser(),
+      countPetFollowers(pet.id),
+      countPetPosts(pet.id),
+      listPetPosts(pet.id, null),
+      isFollowingPet(pet.id),
+    ],
+  );
 
   const isOwner = user?.id === pet.owner_id;
 
@@ -146,14 +151,24 @@ export default async function PetPage({ params }: PetPageProps) {
               </span>
             </p>
 
-            {isOwner ? (
-              <Button variant="outline" size="lg" asChild className="ml-auto">
-                <Link href={`/pets/${pet.slug}/edit`}>
-                  <Pencil aria-hidden />
-                  Edit
-                </Link>
-              </Button>
-            ) : null}
+            <div className="ml-auto">
+              {isOwner ? (
+                <Button variant="outline" size="lg" asChild>
+                  <Link href={`/pets/${pet.slug}/edit`}>
+                    <Pencil aria-hidden />
+                    Edit
+                  </Link>
+                </Button>
+              ) : (
+                <FollowButton
+                  petId={pet.id}
+                  petName={pet.name}
+                  initialFollowing={isFollowing}
+                  initialFollowers={followers}
+                  canInteract={user !== null}
+                />
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -190,6 +205,7 @@ export default async function PetPage({ params }: PetPageProps) {
               scope={{ type: "pet", petId: pet.id }}
               initialPosts={postPage.posts}
               initialCursor={postPage.nextCursor}
+              viewerSignedIn={user !== null}
             />
           </div>
         )}

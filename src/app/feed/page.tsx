@@ -68,6 +68,7 @@ export default async function FeedPage() {
           scope={{ type: "feed" }}
           initialPosts={posts}
           initialCursor={nextCursor}
+          viewerSignedIn
         />
       )}
     </div>

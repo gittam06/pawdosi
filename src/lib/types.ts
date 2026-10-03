@@ -24,12 +24,22 @@ export type PetGender = Enums["pet_gender"];
 export type Post = Tables["posts"]["Row"];
 export type PostImage = Tables["post_images"]["Row"];
 export type Follow = Tables["follows"]["Row"];
+export type Like = Tables["likes"]["Row"];
+export type Comment = Tables["comments"]["Row"];
 
 /** The shape every feed, grid and detail view renders. */
 export type PostWithRelations = Post & {
   pet: Pick<Pet, "id" | "name" | "slug" | "species" | "avatar_url">;
   author: Pick<Profile, "id" | "username" | "display_name">;
   images: PostImage[];
+  likeCount: number;
+  commentCount: number;
+  /** False for signed-out visitors; they have nothing to un-like. */
+  viewerHasLiked: boolean;
+};
+
+export type CommentWithAuthor = Comment & {
+  author: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">;
 };
 
 /** Keyset cursor. Ordering by created_at alone is not stable under ties. */

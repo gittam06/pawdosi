@@ -203,6 +203,15 @@ the CSS variables above — never restyled with one-off colours.
 | `PostImages` | `components/posts/` | Layout by count: 1 contained, 2–4 in a square grid |
 | `PostFeed` | `components/posts/` | First page from the server, later pages appended |
 | `PostComposer` | `components/posts/` | Upload-then-publish, with per-image removal |
+| `LikeButton` | `components/posts/` | Optimistic; the filled heart uses `alert`, not `primary` |
+| `FollowButton` | `components/pets/` | Optimistic; solid becomes outline once following |
+| `CommentList` | `components/posts/` | Oldest first; delete appears only where permitted |
+
+Optimistic controls (like, follow) show the new state immediately and revert on
+their own if the write fails — `useOptimistic` discards the guess when the
+transition ends without the real state having moved. The filled heart borrows
+`alert` rather than `primary`: a liked post should not compete with the primary
+action on the page.
 
 Images are delivered by Cloudinary with `f_auto,q_auto`, and Next's optimizer
 is switched off for them (`CloudinaryImage`): running both would re-process an

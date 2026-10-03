@@ -55,6 +55,7 @@ export default async function ExplorePage() {
           scope={{ type: "explore" }}
           initialPosts={posts}
           initialCursor={nextCursor}
+          viewerSignedIn={user !== null}
         />
       )}
     </div>

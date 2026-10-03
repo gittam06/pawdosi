@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 
+import { CommentForm } from "@/components/posts/comment-form";
+import {
+  CommentList,
+  CommentSignInPrompt,
+} from "@/components/posts/comment-list";
 import { DeletePostDialog } from "@/components/posts/delete-post-dialog";
+import { LikeButton } from "@/components/posts/like-button";
 import { PostImages } from "@/components/posts/post-images";
 import { PetAvatar } from "@/components/pets/pet-avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +17,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { cloudinaryTransform } from "@/lib/cloudinary-url";
 import { getPostById } from "@/lib/posts";
 import { absoluteTime, relativeTime } from "@/lib/relative-time";
+import { listComments } from "@/lib/social";
 
 type PostPageProps = { params: Promise<{ id: string }> };
 
@@ -55,7 +63,11 @@ export default async function PostPage({ params }: PostPageProps) {
 
   if (!post) notFound();
 
-  const user = await getCurrentUser();
+  const [user, comments] = await Promise.all([
+    getCurrentUser(),
+    listComments(post.id),
+  ]);
+
   const isAuthor = user?.id === post.author_id;
 
   return (
@@ -105,8 +117,39 @@ export default async function PostPage({ params }: PostPageProps) {
           >
             {absoluteTime(post.created_at)} ({relativeTime(post.created_at)})
           </time>
+
+          <div className="flex items-center gap-1 border-t border-border pt-2">
+            <LikeButton
+              postId={post.id}
+              initialCount={post.likeCount}
+              initialLiked={post.viewerHasLiked}
+              canInteract={user !== null}
+            />
+            <span className="flex items-center gap-1.5 px-2 text-sm text-muted-foreground">
+              <MessageCircle className="size-4" aria-hidden />
+              <span className="tabular-nums">{comments.length}</span>
+              <span className="sr-only">
+                {comments.length === 1 ? "comment" : "comments"}
+              </span>
+            </span>
+          </div>
         </CardContent>
       </Card>
+
+      <section aria-labelledby="comments-heading" className="mt-6 space-y-4">
+        <h2 id="comments-heading" className="font-heading text-lg font-bold">
+          Comments
+        </h2>
+
+        <CommentList
+          comments={comments}
+          postId={post.id}
+          viewerId={user?.id ?? null}
+          postAuthorId={post.author_id}
+        />
+
+        {user ? <CommentForm postId={post.id} /> : <CommentSignInPrompt />}
+      </section>
     </div>
   );
 }

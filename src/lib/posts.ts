@@ -1,5 +1,6 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
+import { getCurrentUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { PostCursor, PostWithRelations } from "@/lib/types";
 
@@ -14,12 +15,77 @@ import type { PostCursor, PostWithRelations } from "@/lib/types";
 
 export const POSTS_PAGE_SIZE = 12;
 
+/**
+ * `likes(count)` and `comments(count)` are PostgREST aggregate embeds: the
+ * counts come back with the page in one round trip, instead of N+1 queries or
+ * a denormalised counter column that can drift.
+ */
 const POST_SELECT = `
   *,
   pet:pets!posts_pet_id_fkey(id, name, slug, species, avatar_url),
   author:profiles!posts_author_id_fkey(id, username, display_name),
-  images:post_images(*)
+  images:post_images(*),
+  likes:likes(count),
+  comments:comments(count)
 `;
+
+/** What the query returns, before counts are flattened. */
+type RawPost = Omit<
+  PostWithRelations,
+  "likeCount" | "commentCount" | "viewerHasLiked"
+> & {
+  likes: { count: number }[] | null;
+  comments: { count: number }[] | null;
+};
+
+function normalise(raw: RawPost): PostWithRelations {
+  const { likes, comments, ...post } = raw;
+
+  return {
+    ...post,
+    // PostgREST does not guarantee the order of embedded rows.
+    images: [...post.images].sort((a, b) => a.position - b.position),
+    likeCount: likes?.[0]?.count ?? 0,
+    commentCount: comments?.[0]?.count ?? 0,
+    viewerHasLiked: false,
+  };
+}
+
+/**
+ * Fills in "did *I* like this" for a page of posts with one extra query,
+ * rather than embedding a per-viewer filter into the main select.
+ */
+async function withViewerLikes(page: PostPage): Promise<PostPage> {
+  if (page.posts.length === 0) return page;
+
+  const user = await getCurrentUser();
+  if (!user) return page;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("likes")
+    .select("post_id")
+    .eq("user_id", user.id)
+    .in(
+      "post_id",
+      page.posts.map((post) => post.id),
+    );
+
+  if (error) {
+    console.error("Failed to load viewer likes", error);
+    return page;
+  }
+
+  const liked = new Set(data.map((row) => row.post_id));
+
+  return {
+    ...page,
+    posts: page.posts.map((post) => ({
+      ...post,
+      viewerHasLiked: liked.has(post.id),
+    })),
+  };
+}
 
 /**
  * Cursors arrive from the query string, and they are interpolated into a
@@ -39,14 +105,6 @@ export type PostPage = {
 
 const EMPTY_PAGE: PostPage = { posts: [], nextCursor: null };
 
-function sortImages(post: PostWithRelations): PostWithRelations {
-  // PostgREST does not guarantee the order of embedded rows.
-  return {
-    ...post,
-    images: [...post.images].sort((a, b) => a.position - b.position),
-  };
-}
-
 /**
  * Turns a query result into a page.
  *
@@ -60,10 +118,10 @@ function toPage(data: unknown, error: unknown): PostPage {
     return EMPTY_PAGE;
   }
 
-  const rows = (data ?? []) as PostWithRelations[];
+  const rows = (data ?? []) as RawPost[];
   const hasMore = rows.length > POSTS_PAGE_SIZE;
   const posts = (hasMore ? rows.slice(0, POSTS_PAGE_SIZE) : rows).map(
-    sortImages,
+    normalise,
   );
   const last = posts.at(-1);
 
@@ -94,7 +152,7 @@ export async function listExplorePosts(
   if (cursor) query = query.or(cursorFilter(cursor));
 
   const { data, error } = await query;
-  return toPage(data, error);
+  return withViewerLikes(toPage(data, error));
 }
 
 export async function listPetPosts(
@@ -114,7 +172,7 @@ export async function listPetPosts(
   if (cursor) query = query.or(cursorFilter(cursor));
 
   const { data, error } = await query;
-  return toPage(data, error);
+  return withViewerLikes(toPage(data, error));
 }
 
 /** Pets this user follows. Also used to decide whether the feed is empty. */
@@ -155,7 +213,7 @@ export async function listFeedPosts(
   if (cursor) query = query.or(cursorFilter(cursor));
 
   const { data, error } = await query;
-  return toPage(data, error);
+  return withViewerLikes(toPage(data, error));
 }
 
 export async function getPostById(
@@ -174,7 +232,14 @@ export async function getPostById(
     return null;
   }
 
-  return data ? sortImages(data as unknown as PostWithRelations) : null;
+  if (!data) return null;
+
+  const page = await withViewerLikes({
+    posts: [normalise(data as unknown as RawPost)],
+    nextCursor: null,
+  });
+
+  return page.posts[0] ?? null;
 }
 
 export async function countPetPosts(petId: string): Promise<number> {

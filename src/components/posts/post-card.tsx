@@ -2,6 +2,8 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 
 import { PetAvatar } from "@/components/pets/pet-avatar";
+import { Button } from "@/components/ui/button";
+import { LikeButton } from "@/components/posts/like-button";
 import { PostImages } from "@/components/posts/post-images";
 import { Card, CardContent } from "@/components/ui/card";
 import { absoluteTime, relativeTime } from "@/lib/relative-time";
@@ -13,9 +15,11 @@ import type { PostWithRelations } from "@/lib/types";
  */
 export function PostCard({
   post,
+  viewerSignedIn,
   priority = false,
 }: {
   post: PostWithRelations;
+  viewerSignedIn: boolean;
   priority?: boolean;
 }) {
   return (
@@ -71,13 +75,24 @@ export function PostCard({
           <p className="text-sm whitespace-pre-line">{post.caption}</p>
         ) : null}
 
-        <Link
-          href={`/posts/${post.id}`}
-          className="inline-flex items-center gap-1.5 rounded-sm text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          <MessageCircle className="size-3.5" aria-hidden />
-          View post
-        </Link>
+        <div className="flex items-center gap-1">
+          <LikeButton
+            postId={post.id}
+            initialCount={post.likeCount}
+            initialLiked={post.viewerHasLiked}
+            canInteract={viewerSignedIn}
+          />
+
+          <Button variant="ghost" size="sm" asChild className="gap-1.5 px-2">
+            <Link href={`/posts/${post.id}`}>
+              <MessageCircle className="size-4" aria-hidden />
+              <span className="tabular-nums">{post.commentCount}</span>
+              <span className="sr-only">
+                {post.commentCount === 1 ? "comment" : "comments"}
+              </span>
+            </Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

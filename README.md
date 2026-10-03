@@ -8,8 +8,9 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 3 complete** — design system, app shell, authentication, pet
-> profiles, and posts with a paginated feed. See [Roadmap](#roadmap).
+> Status: **Phase 4 complete** — authentication, pet profiles, posts with a
+> paginated feed, and the social layer (likes, comments, follows).
+> See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -25,9 +26,13 @@ families.
 | ------------------------------------- | --------------------------------- |
 | ![](docs/screenshots/pet-profile.png) | ![](docs/screenshots/explore.png) |
 
-| Composer                           | Mobile                                |
+| Composer                           | Post detail                           |
 | ---------------------------------- | ------------------------------------- |
-| ![](docs/screenshots/composer.png) | ![](docs/screenshots/home-mobile.png) |
+| ![](docs/screenshots/composer.png) | ![](docs/screenshots/post-detail.png) |
+
+| Mobile                                |
+| ------------------------------------- |
+| ![](docs/screenshots/home-mobile.png) |
 
 ---
 
@@ -60,10 +65,13 @@ families.
   on keyset (cursor) pagination rather than offset
 - Post detail pages with Open Graph images, and post deletion that removes the
   Cloudinary assets with it
+- Likes and follows with optimistic UI that reverts itself on failure
+- Comments, deletable by their author **or** by the post's author
+- Like, comment and follower counts come from PostgREST aggregate embeds — one
+  round trip per page, no denormalised counters to drift
 
 **Planned**
 
-- Likes (optimistic), comments, follow/unfollow pets
 - Lost & Found reports with photo, area, last-seen time, filters and a
   shareable detail page, markable as _Reunited_
 - Notifications, pet search, infinite scroll, SEO + Open Graph images
@@ -249,6 +257,6 @@ docs/DESIGN.md            # the design system
 - [x] **Phase 1** — auth, onboarding, profile editing, avatar uploads
 - [x] **Phase 2** — pet profiles, public pet pages
 - [x] **Phase 3** — posts, home feed, Explore, cursor pagination
-- [ ] **Phase 4** — likes, comments, follows
+- [x] **Phase 4** — likes, comments, follows, counts
 - [ ] **Phase 5** — Lost & Found
 - [ ] **Phase 6** — notifications, search, SEO, seed data, tests, deploy

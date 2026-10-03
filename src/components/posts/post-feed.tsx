@@ -14,6 +14,7 @@ type PostFeedProps = {
   scope: FeedScope;
   initialPosts: PostWithRelations[];
   initialCursor: PostCursor | null;
+  viewerSignedIn: boolean;
 };
 
 /**
@@ -27,6 +28,7 @@ export function PostFeed({
   scope,
   initialPosts,
   initialCursor,
+  viewerSignedIn,
 }: PostFeedProps) {
   const [posts, setPosts] = useState(initialPosts);
   const [cursor, setCursor] = useState(initialCursor);
@@ -55,7 +57,11 @@ export function PostFeed({
       <ul className="space-y-4">
         {posts.map((post, index) => (
           <li key={post.id}>
-            <PostCard post={post} priority={index === 0} />
+            <PostCard
+              post={post}
+              viewerSignedIn={viewerSignedIn}
+              priority={index === 0}
+            />
           </li>
         ))}
       </ul>
