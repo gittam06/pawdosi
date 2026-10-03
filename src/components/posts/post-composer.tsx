@@ -27,6 +27,7 @@ export function PostComposer({ pets }: { pets: Pet[] }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [caption, setCaption] = useState("");
+  const [petId, setPetId] = useState(pets.length === 1 ? pets[0].id : "");
   const [isUploading, setIsUploading] = useState(false);
 
   const remaining = MAX_POST_IMAGES - images.length;
@@ -131,7 +132,8 @@ export function PostComposer({ pets }: { pets: Pet[] }) {
         name="petId"
         label="Posting as"
         options={petOptions}
-        defaultValue={pets.length === 1 ? pets[0].id : undefined}
+        value={petId}
+        onValueChange={setPetId}
         placeholder="Pick a pet"
         required
         errors={fieldErrors?.petId}

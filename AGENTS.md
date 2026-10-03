@@ -94,6 +94,16 @@ commit message.
 - Do not call `setState` inside an effect — `react-hooks/set-state-in-effect`
   rejects it. To reset a field after a successful action, adjust state during
   render guarded by a "have I handled this state object yet" check.
+- `formData.get()` returns **null**, not undefined, for a field that was never
+  rendered. Optional fields behind a conditional need `.nullish()`, or the form
+  fails validation on an input the user cannot even see.
+- Radix `SelectItem` rejects `value=""`. Use a sentinel ("none", "all") and
+  post the real value through a hidden input.
+- A filter whose default is not "unset" needs an explicit value for "no
+  filter". `status` absent means _open_, so "All" is the literal `all` — the
+  two cannot share the empty state.
+- Select fields are controlled wherever a rejected submission should keep the
+  choice: React 19's form reset clears an uncontrolled Select too.
 
 ## Build plan
 
@@ -111,7 +121,7 @@ wait for approval.
    the follow/unfollow UI and the counts.)
 4. Social — likes (optimistic), comments, follow/unfollow pets, counts. ✅
 5. Lost & Found — reports with photo/area/last-seen, filters, detail page,
-   "Reunited" state.
+   "Reunited" state. ✅
 6. Polish & ship — notifications, search, infinite scroll, SEO + OG images,
    seed script, Vitest + Playwright tests, deploy.
 

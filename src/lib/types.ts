@@ -42,6 +42,18 @@ export type CommentWithAuthor = Comment & {
   author: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">;
 };
 
+export type Report = Tables["lost_found_reports"]["Row"];
+export type ReportType = Enums["report_type"];
+export type ReportStatus = Enums["report_status"];
+
+export type ReportWithReporter = Report & {
+  reporter: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">;
+  pet: Pick<Pet, "id" | "name" | "slug"> | null;
+};
+
+/** Keyset cursor, same shape and reasoning as the post feed's. */
+export type ReportCursor = { createdAt: string; id: string };
+
 /** Keyset cursor. Ordering by created_at alone is not stable under ties. */
 export type PostCursor = { createdAt: string; id: string };
 

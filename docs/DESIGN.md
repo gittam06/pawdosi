@@ -206,6 +206,17 @@ the CSS variables above — never restyled with one-off colours.
 | `LikeButton` | `components/posts/` | Optimistic; the filled heart uses `alert`, not `primary` |
 | `FollowButton` | `components/pets/` | Optimistic; solid becomes outline once following |
 | `CommentList` | `components/posts/` | Oldest first; delete appears only where permitted |
+| `ReportCard` | `components/reports/` | Tinted by state: urgent, informational, resolved |
+| `ReportStatusBadge` | `components/reports/` | Lost / Found / Reunited, each with its own icon |
+| `ReportFiltersBar` | `components/reports/` | Writes to the query string, not to local state |
+| `ShareButton` | `components/share-button.tsx` | Native share sheet, clipboard fallback |
+
+**Lost & Found uses the status scales deliberately.** An open _lost_ report is
+`alert` — tinted surface, alert-coloured edge — so it is the first thing the
+eye lands on in a column of cards. An open _found_ report is `teal`: useful,
+not an emergency for the reader. A reunited report turns `success` and opens
+with its happy ending instead of its alarm. The board is the one place in the
+app where a card is allowed to shout, and only one kind of card does.
 
 Optimistic controls (like, follow) show the new state immediately and revert on
 their own if the write fails — `useOptimistic` discards the guess when the

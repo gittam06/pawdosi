@@ -16,6 +16,9 @@ type SelectFieldProps = {
   label: string;
   options: readonly Option[];
   defaultValue?: string;
+  /** Pass with `onValueChange` to control the field. */
+  value?: string;
+  onValueChange?: (value: string) => void;
   placeholder?: string;
   hint?: string;
   errors?: string[];
@@ -26,12 +29,18 @@ type SelectFieldProps = {
  * Radix's Select renders a hidden native <select> when given a `name`, so the
  * value is posted with the rest of the form and the Server Action sees it
  * without any client-side plumbing.
+ *
+ * Control it (`value` + `onValueChange`) wherever a rejected submission should
+ * keep the choice: React 19 resets the form once the action settles, and an
+ * uncontrolled Select goes back to its placeholder along with it.
  */
 export function SelectField({
   name,
   label,
   options,
   defaultValue,
+  value,
+  onValueChange,
   placeholder = "Choose one",
   hint,
   errors,
@@ -47,7 +56,13 @@ export function SelectField({
     <div className="space-y-1.5">
       <Label htmlFor={name}>{label}</Label>
 
-      <Select name={name} defaultValue={defaultValue} required={required}>
+      <Select
+        name={name}
+        defaultValue={defaultValue}
+        value={value}
+        onValueChange={onValueChange}
+        required={required}
+      >
         <SelectTrigger
           id={name}
           className="h-10 w-full"

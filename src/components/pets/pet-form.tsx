@@ -32,6 +32,8 @@ export function PetForm(props: PetFormProps) {
   // Controlled: React 19 resets the form once the action settles, which would
   // throw away everything typed when validation rejects one field.
   const [name, setName] = useState(props.pet?.name ?? "");
+  const [species, setSpecies] = useState<string>(props.pet?.species ?? "");
+  const [gender, setGender] = useState<string>(props.pet?.gender ?? "unknown");
   const [breed, setBreed] = useState(props.pet?.breed ?? "");
   const [birthDate, setBirthDate] = useState(props.pet?.birth_date ?? "");
   const [bio, setBio] = useState(props.pet?.bio ?? "");
@@ -59,7 +61,8 @@ export function PetForm(props: PetFormProps) {
           name="species"
           label="Species"
           options={speciesOptions}
-          defaultValue={props.pet?.species}
+          value={species}
+          onValueChange={setSpecies}
           placeholder="Pick a species"
           required
           errors={fieldErrors?.species}
@@ -69,7 +72,8 @@ export function PetForm(props: PetFormProps) {
           name="gender"
           label="Gender"
           options={genderOptions}
-          defaultValue={props.pet?.gender ?? "unknown"}
+          value={gender}
+          onValueChange={setGender}
           errors={fieldErrors?.gender}
         />
       </div>

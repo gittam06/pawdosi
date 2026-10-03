@@ -8,9 +8,8 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 4 complete** — authentication, pet profiles, posts with a
-> paginated feed, and the social layer (likes, comments, follows).
-> See [Roadmap](#roadmap).
+> Status: **Phase 5 complete** — authentication, pet profiles, posts and feed,
+> the social layer, and the Lost &amp; Found board. See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -29,6 +28,10 @@ families.
 | Composer                           | Post detail                           |
 | ---------------------------------- | ------------------------------------- |
 | ![](docs/screenshots/composer.png) | ![](docs/screenshots/post-detail.png) |
+
+| Lost &amp; Found board               | Report detail                           |
+| ------------------------------------ | --------------------------------------- |
+| ![](docs/screenshots/lost-found.png) | ![](docs/screenshots/report-detail.png) |
 
 | Mobile                                |
 | ------------------------------------- |
@@ -69,11 +72,15 @@ families.
 - Comments, deletable by their author **or** by the post's author
 - Like, comment and follower counts come from PostgREST aggregate embeds — one
   round trip per page, no denormalised counters to drift
+- **Lost & Found**: lost or found reports with a photo, area and last-seen
+  time, filtered by city, species, type and status. Filters live in the query
+  string, so a filtered board is a link you can paste into a neighbourhood
+  group. Open lost reports are visually prominent; reunited ones are
+  celebrated rather than hidden. Reports are readable signed-out, because the
+  person who recognises the animal may not have an account.
 
 **Planned**
 
-- Lost & Found reports with photo, area, last-seen time, filters and a
-  shareable detail page, markable as _Reunited_
 - Notifications, pet search, infinite scroll, SEO + Open Graph images
 
 ---
@@ -258,5 +265,5 @@ docs/DESIGN.md            # the design system
 - [x] **Phase 2** — pet profiles, public pet pages
 - [x] **Phase 3** — posts, home feed, Explore, cursor pagination
 - [x] **Phase 4** — likes, comments, follows, counts
-- [ ] **Phase 5** — Lost & Found
+- [x] **Phase 5** — Lost & Found board, filters, reunited state
 - [ ] **Phase 6** — notifications, search, SEO, seed data, tests, deploy
