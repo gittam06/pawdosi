@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          pet_id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          pet_id: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          pet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pets: {
         Row: {
           avatar_public_id: string | null
@@ -66,6 +99,86 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_images: {
+        Row: {
+          created_at: string
+          height: number
+          id: string
+          position: number
+          post_id: string
+          public_id: string
+          url: string
+          width: number
+        }
+        Insert: {
+          created_at?: string
+          height: number
+          id?: string
+          position: number
+          post_id: string
+          public_id: string
+          url: string
+          width: number
+        }
+        Update: {
+          created_at?: string
+          height?: number
+          id?: string
+          position?: number
+          post_id?: string
+          public_id?: string
+          url?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_images_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          caption: string | null
+          created_at: string
+          id: string
+          pet_id: string
+        }
+        Insert: {
+          author_id: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          pet_id: string
+        }
+        Update: {
+          author_id?: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          pet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
             referencedColumns: ["id"]
           },
         ]

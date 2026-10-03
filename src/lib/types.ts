@@ -21,6 +21,20 @@ export type PetUpdate = Tables["pets"]["Update"];
 export type PetSpecies = Enums["pet_species"];
 export type PetGender = Enums["pet_gender"];
 
+export type Post = Tables["posts"]["Row"];
+export type PostImage = Tables["post_images"]["Row"];
+export type Follow = Tables["follows"]["Row"];
+
+/** The shape every feed, grid and detail view renders. */
+export type PostWithRelations = Post & {
+  pet: Pick<Pet, "id" | "name" | "slug" | "species" | "avatar_url">;
+  author: Pick<Profile, "id" | "username" | "display_name">;
+  images: PostImage[];
+};
+
+/** Keyset cursor. Ordering by created_at alone is not stable under ties. */
+export type PostCursor = { createdAt: string; id: string };
+
 /** A pet joined with the profile that owns it — what the public page renders. */
 export type PetWithOwner = Pet & {
   owner: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">;
