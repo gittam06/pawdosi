@@ -194,6 +194,68 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          actor_id: string
+          created_at: string
+          id: string
+          pet_id: string | null
+          post_id: string | null
+          read_at: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          id?: string
+          pet_id?: string | null
+          post_id?: string | null
+          read_at?: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          id?: string
+          pet_id?: string | null
+          post_id?: string | null
+          read_at?: string | null
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pets: {
         Row: {
           avatar_public_id: string | null
@@ -374,6 +436,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      notification_type: "like" | "comment" | "follow"
       pet_gender: "male" | "female" | "unknown"
       pet_species: "dog" | "cat" | "bird" | "rabbit" | "other"
       report_status: "open" | "reunited"
@@ -505,6 +568,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      notification_type: ["like", "comment", "follow"],
       pet_gender: ["male", "female", "unknown"],
       pet_species: ["dog", "cat", "bird", "rabbit", "other"],
       report_status: ["open", "reunited"],
