@@ -8,10 +8,11 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **feature complete** — all six build phases are done. Notifications,
-> search, SEO, seed data and tests are in. See [Roadmap](#roadmap).
+> Status: **live**. All six build phases are done and the app is deployed.
+> See [Roadmap](#roadmap).
 
-🔗 **Live demo:** _coming soon_
+🔗 **Live:** <https://pawpals-swart.vercel.app> ·
+**Source:** <https://github.com/gittam06/pawpals>
 
 ---
 
