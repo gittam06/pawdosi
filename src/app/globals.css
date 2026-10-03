@@ -1,0 +1,273 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   PawPals design tokens.
+   Values live in :root / .dark below; this block only registers them with
+   Tailwind so utilities (bg-alert, shadow-card, font-heading, ...) exist.
+   `inline` keeps the var() references unresolved so .dark overrides apply.
+   See docs/DESIGN.md for the rationale behind every value.
+--------------------------------------------------------------------------- */
+@theme inline {
+  /* Typography -------------------------------------------------------- */
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-heading:
+    var(--font-nunito), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Surfaces & text --------------------------------------------------- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Actions ----------------------------------------------------------- */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-muted: var(--primary-muted);
+  --color-primary-muted-foreground: var(--primary-muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Brand accent: soft teal, the counterweight to marigold ------------ */
+  --color-teal: var(--teal);
+  --color-teal-foreground: var(--teal-foreground);
+  --color-teal-muted: var(--teal-muted);
+  --color-teal-muted-foreground: var(--teal-muted-foreground);
+
+  /* Lost & Found status colours --------------------------------------- */
+  --color-alert: var(--alert);
+  --color-alert-foreground: var(--alert-foreground);
+  --color-alert-muted: var(--alert-muted);
+  --color-alert-muted-foreground: var(--alert-muted-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-success-muted-foreground: var(--success-muted-foreground);
+
+  /* shadcn extras (kept so its primitives keep working) --------------- */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Radius scale ------------------------------------------------------ */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.3);
+  --radius-2xl: calc(var(--radius) * 1.7);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.8);
+
+  /* Shadow scale. Tints are theme-aware (see --shadow-a/b/c). --------- */
+  --shadow-soft: 0 1px 2px 0 var(--shadow-a), 0 1px 3px -1px var(--shadow-b);
+  --shadow-card: 0 1px 2px 0 var(--shadow-a), 0 6px 16px -6px var(--shadow-b);
+  --shadow-lift:
+    0 2px 4px -1px var(--shadow-a), 0 16px 32px -12px var(--shadow-c);
+  --shadow-pop:
+    0 4px 8px -2px var(--shadow-b), 0 24px 48px -16px var(--shadow-c);
+
+  /* Layout widths ----------------------------------------------------- */
+  --container-feed: 34rem; /* single-column post feed */
+  --container-page: 72rem; /* page shell */
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Warm off-white canvas keeps photos feeling like prints on paper. */
+  --background: oklch(0.988 0.004 85);
+  --foreground: oklch(0.24 0.02 55);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.02 55);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.02 55);
+  --muted: oklch(0.962 0.008 85);
+  --muted-foreground: oklch(0.5 0.022 60);
+  --border: oklch(0.9 0.008 80);
+  --input: oklch(0.9 0.008 80);
+  --ring: oklch(0.615 0.175 45);
+
+  /* Marigold: deep enough that white text on it clears 4.5:1. */
+  --primary: oklch(0.615 0.175 45);
+  --primary-foreground: oklch(0.99 0.008 85);
+  --primary-muted: oklch(0.955 0.03 70);
+  --primary-muted-foreground: oklch(0.42 0.13 48);
+
+  --secondary: oklch(0.955 0.012 80);
+  --secondary-foreground: oklch(0.3 0.02 55);
+  /* Hover/highlight tint leans teal so it reads as a second brand note. */
+  --accent: oklch(0.955 0.022 195);
+  --accent-foreground: oklch(0.3 0.045 200);
+
+  --destructive: oklch(0.545 0.2 25);
+  --destructive-foreground: oklch(0.99 0.008 25);
+
+  --teal: oklch(0.6 0.085 195);
+  --teal-foreground: oklch(0.99 0.005 195);
+  --teal-muted: oklch(0.95 0.025 195);
+  --teal-muted-foreground: oklch(0.38 0.06 198);
+
+  /* Open lost report: urgent rose. Distinct from marigold, not alarming. */
+  --alert: oklch(0.555 0.185 15);
+  --alert-foreground: oklch(0.99 0.008 20);
+  --alert-muted: oklch(0.955 0.028 15);
+  --alert-muted-foreground: oklch(0.42 0.15 16);
+
+  /* Reunited: calm celebratory green. */
+  --success: oklch(0.555 0.12 150);
+  --success-foreground: oklch(0.99 0.008 150);
+  --success-muted: oklch(0.95 0.035 150);
+  --success-muted-foreground: oklch(0.38 0.09 152);
+
+  /* Shadow tints: warm and low-opacity in light mode. */
+  --shadow-a: oklch(0.45 0.05 60 / 0.06);
+  --shadow-b: oklch(0.45 0.05 60 / 0.1);
+  --shadow-c: oklch(0.45 0.05 60 / 0.14);
+
+  --sidebar: oklch(0.975 0.006 85);
+  --sidebar-foreground: oklch(0.24 0.02 55);
+  --sidebar-primary: oklch(0.615 0.175 45);
+  --sidebar-primary-foreground: oklch(0.99 0.008 85);
+  --sidebar-accent: oklch(0.955 0.022 195);
+  --sidebar-accent-foreground: oklch(0.3 0.045 200);
+  --sidebar-border: oklch(0.9 0.008 80);
+  --sidebar-ring: oklch(0.615 0.175 45);
+
+  --chart-1: oklch(0.65 0.17 48);
+  --chart-2: oklch(0.62 0.09 195);
+  --chart-3: oklch(0.6 0.13 15);
+  --chart-4: oklch(0.6 0.11 150);
+  --chart-5: oklch(0.58 0.11 300);
+}
+
+.dark {
+  /* Warm charcoal, never pure black: photos keep their contrast. */
+  --background: oklch(0.195 0.012 60);
+  --foreground: oklch(0.965 0.006 85);
+  --card: oklch(0.235 0.013 60);
+  --card-foreground: oklch(0.965 0.006 85);
+  --popover: oklch(0.245 0.013 60);
+  --popover-foreground: oklch(0.965 0.006 85);
+  --muted: oklch(0.275 0.013 60);
+  --muted-foreground: oklch(0.715 0.016 70);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.72 0.155 55);
+
+  /* Lighter marigold on dark, with dark text for contrast. */
+  --primary: oklch(0.735 0.155 58);
+  --primary-foreground: oklch(0.21 0.03 50);
+  --primary-muted: oklch(0.32 0.055 55);
+  --primary-muted-foreground: oklch(0.85 0.09 70);
+
+  --secondary: oklch(0.285 0.013 60);
+  --secondary-foreground: oklch(0.965 0.006 85);
+  --accent: oklch(0.31 0.03 195);
+  --accent-foreground: oklch(0.92 0.03 195);
+
+  --destructive: oklch(0.68 0.19 25);
+  --destructive-foreground: oklch(0.18 0.03 25);
+
+  --teal: oklch(0.72 0.085 195);
+  --teal-foreground: oklch(0.2 0.03 195);
+  --teal-muted: oklch(0.31 0.035 195);
+  --teal-muted-foreground: oklch(0.86 0.055 195);
+
+  --alert: oklch(0.675 0.17 17);
+  --alert-foreground: oklch(0.19 0.04 17);
+  --alert-muted: oklch(0.32 0.065 15);
+  --alert-muted-foreground: oklch(0.87 0.08 17);
+
+  --success: oklch(0.68 0.125 152);
+  --success-foreground: oklch(0.19 0.035 152);
+  --success-muted: oklch(0.3 0.055 152);
+  --success-muted-foreground: oklch(0.86 0.09 152);
+
+  /* Dark mode shadows are neutral and deeper — warm tints look muddy. */
+  --shadow-a: oklch(0 0 0 / 0.3);
+  --shadow-b: oklch(0 0 0 / 0.4);
+  --shadow-c: oklch(0 0 0 / 0.5);
+
+  --sidebar: oklch(0.235 0.013 60);
+  --sidebar-foreground: oklch(0.965 0.006 85);
+  --sidebar-primary: oklch(0.735 0.155 58);
+  --sidebar-primary-foreground: oklch(0.21 0.03 50);
+  --sidebar-accent: oklch(0.31 0.03 195);
+  --sidebar-accent-foreground: oklch(0.92 0.03 195);
+  --sidebar-border: oklch(1 0 0 / 11%);
+  --sidebar-ring: oklch(0.72 0.155 55);
+
+  --chart-1: oklch(0.74 0.155 58);
+  --chart-2: oklch(0.72 0.085 195);
+  --chart-3: oklch(0.7 0.14 17);
+  --chart-4: oklch(0.7 0.12 152);
+  --chart-5: oklch(0.68 0.11 300);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading tracking-tight;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  /* Respect the OS setting instead of animating regardless. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
