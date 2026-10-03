@@ -12,10 +12,21 @@ import { updateSession } from "@/lib/supabase/middleware";
  * typed; the proxy only does the coarse check on every request.
  */
 
-/** Routes that require a signed-in user. Prefix match on path segments. */
+/** Everything under these requires a signed-in user. */
 const PROTECTED_PREFIXES = ["/onboarding", "/settings"];
 
+/**
+ * Exact paths only. `/pets` and `/pets/new` are private, but `/pets/<slug>`
+ * is a public profile — a prefix rule here would hide the whole feature.
+ */
+const PROTECTED_EXACT = ["/pets", "/pets/new"];
+
 function isProtected(pathname: string): boolean {
+  if (PROTECTED_EXACT.includes(pathname)) return true;
+
+  // /pets/<slug>/edit
+  if (pathname.startsWith("/pets/") && pathname.endsWith("/edit")) return true;
+
   return PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

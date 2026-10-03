@@ -1,14 +1,12 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
-import { removeAvatarAction, updateAvatarAction } from "@/actions/profile";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/user-avatar";
-import { idleState } from "@/lib/action-state";
+import { idleState, type ActionState } from "@/lib/action-state";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -21,23 +19,69 @@ type SignResponse = {
   signature: string;
 };
 
-type AvatarUploaderProps = {
-  name: string;
+type UploadAction = (
+  state: ActionState,
+  formData: FormData,
+) => Promise<ActionState>;
+
+type ImageUploaderProps = {
+  /** Which signed folder to upload into. */
+  folder: "avatar" | "pet" | "post" | "report";
   currentUrl: string | null;
+  /** Rendered preview of the current image. */
+  preview: ReactNode;
+  /** Extra fields every action call needs, e.g. `{ petId }`. */
+  hiddenFields?: Record<string, string>;
+  onUpload: UploadAction;
+  onRemove: UploadAction;
+  uploadLabel?: string;
+  replaceLabel?: string;
 };
 
 /**
  * Signed direct upload: the browser asks our server for a signature, then
  * sends the file straight to Cloudinary. The file never passes through the
  * Next.js server, which keeps the function fast and well under its body limit.
+ *
+ * Client-side type and size checks are courtesy only — the Server Action
+ * re-verifies the asset with Cloudinary before storing anything.
  */
-export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
+export function ImageUploader({
+  folder,
+  currentUrl,
+  preview,
+  hiddenFields,
+  onUpload,
+  onRemove,
+  uploadLabel = "Upload photo",
+  replaceLabel = "Change photo",
+}: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
 
   const busy = isPending || isUploading;
+
+  function withHiddenFields(formData: FormData): FormData {
+    for (const [key, value] of Object.entries(hiddenFields ?? {})) {
+      formData.append(key, value);
+    }
+
+    return formData;
+  }
+
+  function report(result: ActionState, fallback: string) {
+    if (result.status === "error") {
+      toast.error(result.message);
+      return false;
+    }
+
+    toast.success(
+      result.status === "success" && result.message ? result.message : fallback,
+    );
+    return true;
+  }
 
   async function handleFile(file: File) {
     if (!ACCEPTED.includes(file.type)) {
@@ -56,7 +100,7 @@ export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
       const signResponse = await fetch("/api/cloudinary/sign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder: "avatar" }),
+        body: JSON.stringify({ folder }),
       });
 
       if (!signResponse.ok) {
@@ -83,25 +127,15 @@ export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
       const asset: { public_id: string; secure_url: string } =
         await uploadResponse.json();
 
-      const payload = new FormData();
+      const payload = withHiddenFields(new FormData());
       payload.append("publicId", asset.public_id);
       payload.append("url", asset.secure_url);
 
-      const result = await updateAvatarAction(idleState, payload);
-
-      if (result.status === "error") {
-        toast.error(result.message);
-        return;
+      if (report(await onUpload(idleState, payload), "Photo updated.")) {
+        startTransition(() => router.refresh());
       }
-
-      toast.success(
-        result.status === "success" && result.message
-          ? result.message
-          : "Photo updated.",
-      );
-      startTransition(() => router.refresh());
     } catch (error) {
-      console.error("Avatar upload failed", error);
+      console.error("Image upload failed", error);
       toast.error(
         error instanceof Error ? error.message : "That upload did not work.",
       );
@@ -113,25 +147,18 @@ export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
 
   function handleRemove() {
     startTransition(async () => {
-      const result = await removeAvatarAction();
-
-      if (result.status === "error") {
-        toast.error(result.message);
-        return;
-      }
-
-      toast.success(
-        result.status === "success" && result.message
-          ? result.message
-          : "Photo removed.",
+      const result = await onRemove(
+        idleState,
+        withHiddenFields(new FormData()),
       );
-      router.refresh();
+
+      if (report(result, "Photo removed.")) router.refresh();
     });
   }
 
   return (
     <div className="flex items-center gap-4">
-      <UserAvatar name={name} src={currentUrl} size={72} />
+      {preview}
 
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -147,7 +174,7 @@ export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
             ) : (
               <Upload aria-hidden />
             )}
-            {currentUrl ? "Change photo" : "Upload photo"}
+            {currentUrl ? replaceLabel : uploadLabel}
           </Button>
 
           {currentUrl ? (
@@ -174,7 +201,7 @@ export function AvatarUploader({ name, currentUrl }: AvatarUploaderProps) {
         type="file"
         accept={ACCEPTED.join(",")}
         className="sr-only"
-        aria-label="Choose a profile photo"
+        aria-label="Choose an image"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void handleFile(file);

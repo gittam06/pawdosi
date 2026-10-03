@@ -184,20 +184,23 @@ introduces the third grid column.
 Built on shadcn/ui primitives in `src/components/ui/`, which are themed through
 the CSS variables above — never restyled with one-off colours.
 
-| Component        | Location                      | Notes                                               |
-| ---------------- | ----------------------------- | --------------------------------------------------- |
-| `Logo`           | `components/brand/logo.tsx`   | Marigold tile + paw mark; tilts on hover            |
-| `SiteHeader`     | `components/layout/`          | Sticky, translucent, blurred; server component      |
-| `MainNav`        | `components/layout/`          | Desktop (`md+`); active item on `primary-muted`     |
-| `MobileNav`      | `components/layout/`          | Bottom tab bar below `md`, respects safe-area inset |
-| `ThemeToggle`    | `components/theme-toggle.tsx` | Light / dark / system; icon swap is pure CSS        |
-| `UserMenu`       | `components/layout/`          | Account dropdown; sign-out is a real form post      |
-| `UserAvatar`     | `components/user-avatar.tsx`  | Cloudinary square crop with an initials fallback    |
-| `AvatarUploader` | `components/upload/`          | Signed direct upload, toast feedback                |
+| Component       | Location                      | Notes                                               |
+| --------------- | ----------------------------- | --------------------------------------------------- |
+| `Logo`          | `components/brand/logo.tsx`   | Marigold tile + paw mark; tilts on hover            |
+| `SiteHeader`    | `components/layout/`          | Sticky, translucent, blurred; server component      |
+| `MainNav`       | `components/layout/`          | Desktop (`md+`); active item on `primary-muted`     |
+| `MobileNav`     | `components/layout/`          | Bottom tab bar below `md`, respects safe-area inset |
+| `ThemeToggle`   | `components/theme-toggle.tsx` | Light / dark / system; icon swap is pure CSS        |
+| `UserMenu`      | `components/layout/`          | Account dropdown; sign-out is a real form post      |
+| `UserAvatar`    | `components/user-avatar.tsx`  | Cloudinary square crop with an initials fallback    |
+| `ImageUploader` | `components/upload/`          | Signed direct upload; takes its own preview node    |
+| `PetAvatar`     | `components/pets/`            | Square Cloudinary crop, species-icon fallback       |
+| `PetCard`       | `components/pets/`            | Grid tile; the whole card is one stretched link     |
+| `SpeciesBadge`  | `components/pets/`            | Icon plus label, never colour alone                 |
+| `EmptyState`    | `components/empty-state.tsx`  | Dashed panel: icon, what goes here, the action      |
 
 Planned app components, each composed from the primitives rather than styled ad
-hoc: `PostCard`, `PetAvatar`, `PetCard`, `ReportCard`, `StatusBadge`,
-`EmptyState`.
+hoc: `PostCard`, `ReportCard`, `StatusBadge`.
 
 ### Forms
 

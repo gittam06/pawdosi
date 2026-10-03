@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
 import { ProfileForm } from "./profile-form";
-import { AvatarUploader } from "@/components/upload/avatar-uploader";
+import { removeAvatarAction, updateAvatarAction } from "@/actions/profile";
+import { ImageUploader } from "@/components/upload/image-uploader";
+import { UserAvatar } from "@/components/user-avatar";
 import {
   Card,
   CardContent,
@@ -40,9 +42,18 @@ export default async function ProfileSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AvatarUploader
-              name={profile.display_name}
+            <ImageUploader
+              folder="avatar"
               currentUrl={profile.avatar_url}
+              preview={
+                <UserAvatar
+                  name={profile.display_name}
+                  src={profile.avatar_url}
+                  size={72}
+                />
+              }
+              onUpload={updateAvatarAction}
+              onRemove={removeAvatarAction}
             />
           </CardContent>
         </Card>

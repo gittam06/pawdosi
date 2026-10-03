@@ -8,8 +8,8 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 1 complete** — design system, app shell, and authentication
-> with user profiles and avatar uploads. See [Roadmap](#roadmap).
+> Status: **Phase 2 complete** — design system, app shell, authentication, and
+> pet profiles with public pages. See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -46,10 +46,13 @@ families.
   `requireOnboardedProfile()` guards in pages
 - Profile editing and avatar uploads: signed direct-to-Cloudinary upload,
   server-side asset verification, old assets deleted on replace
+- Pet profiles: create, edit and delete, up to 20 per owner, with species,
+  breed, birthday, gender and bio
+- Public pet pages at `/pets/[slug]` with per-pet Open Graph metadata; slugs
+  are stable, so a shared link survives a rename
 
 **Planned**
 
-- Multiple pet profiles per owner, public pet pages at `/pets/[slug]`
 - Posts with 1–4 Cloudinary images, home feed from followed pets, Explore
 - Likes (optimistic), comments, follow/unfollow pets
 - Lost & Found reports with photo, area, last-seen time, filters and a
@@ -128,9 +131,11 @@ npm install
 # 2. Configure
 cp .env.example .env.local   # then fill in the values
 
-# 3. Apply migrations (requires the Supabase CLI, linked to your project)
+# 3. Apply migrations — either link the CLI:
 npx supabase link --project-ref <your-project-ref>
 npx supabase db push
+#    …or paste the contents of supabase/migrations/*.sql into the
+#    Supabase SQL editor, in filename order.
 
 # 4. Generate database types
 npm run db:types
@@ -224,7 +229,7 @@ docs/DESIGN.md            # the design system
 
 - [x] **Phase 0** — scaffold, design tokens, Supabase clients, app shell
 - [x] **Phase 1** — auth, onboarding, profile editing, avatar uploads
-- [ ] **Phase 2** — pet profiles
+- [x] **Phase 2** — pet profiles, public pet pages
 - [ ] **Phase 3** — posts and feed
 - [ ] **Phase 4** — likes, comments, follows
 - [ ] **Phase 5** — Lost & Found

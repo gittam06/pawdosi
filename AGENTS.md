@@ -69,6 +69,12 @@ commit message.
   that calls `verifyUploadedImage()` before storing anything, and
   `deleteAsset()` for the asset it replaced.
 - Database types come from `@/lib/types`, never from the generated file.
+- Deleting a Cloudinary asset uses the `public_id` read back from the database
+  under the owner's RLS, never one supplied by the client — a forged id would
+  otherwise delete someone else's image.
+- Icons chosen by data go through a `switch`-based component (see
+  `components/pets/species-icon.tsx`). Picking a component out of a map during
+  render trips `react-hooks/static-components`.
 
 ## Build plan
 
@@ -79,7 +85,7 @@ wait for approval.
 0. Setup — scaffold, Supabase clients, design tokens, base layout. ✅
 1. Auth & user profiles — email/password, onboarding (username + city),
    protected routes in `proxy.ts`, edit profile and avatar. ✅
-2. Pet profiles — CRUD, public page at `/pets/[slug]`.
+2. Pet profiles — CRUD, public page at `/pets/[slug]`. ✅
 3. Posts & feed — 1–4 images + caption, home feed from followed pets, Explore,
    post detail, cursor pagination (`created_at` + `id`), never offset.
 4. Social — likes (optimistic), comments, follow/unfollow pets, counts.

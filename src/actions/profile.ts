@@ -157,7 +157,10 @@ export async function updateAvatarAction(
   return success("Photo updated.");
 }
 
-export async function removeAvatarAction(): Promise<ActionState> {
+export async function removeAvatarAction(
+  _prevState: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
   const user = await requireUser();
   const profile = await getCurrentProfile();
 
