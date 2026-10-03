@@ -8,8 +8,8 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 0 complete** — project scaffold, design system, Supabase
-> clients and app shell. See [Roadmap](#roadmap).
+> Status: **Phase 1 complete** — design system, app shell, and authentication
+> with user profiles and avatar uploads. See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -38,10 +38,17 @@ families.
   `prefers-reduced-motion`
 - Supabase server / browser / proxy clients wired for cookie-based auth
 - Zod-validated environment access
+- Email/password signup and sign-in, with email confirmation and an optional
+  Google provider behind a feature flag
+- Onboarding step for username and city; profiles auto-created by a database
+  trigger on signup
+- Protected routes in the proxy, plus typed `requireUser()` /
+  `requireOnboardedProfile()` guards in pages
+- Profile editing and avatar uploads: signed direct-to-Cloudinary upload,
+  server-side asset verification, old assets deleted on replace
 
 **Planned**
 
-- Email/password auth with a username + city onboarding step
 - Multiple pet profiles per owner, public pet pages at `/pets/[slug]`
 - Posts with 1–4 Cloudinary images, home feed from followed pets, Explore
 - Likes (optimistic), comments, follow/unfollow pets
@@ -132,6 +139,20 @@ npm run db:types
 npm run dev                  # http://localhost:3000
 ```
 
+### Supabase dashboard settings
+
+Two things are configured outside the migrations:
+
+1. **Authentication → URL Configuration** — set the Site URL to your
+   deployment, and add `http://localhost:3000/auth/callback` plus
+   `https://<your-domain>/auth/callback` as redirect URLs. Without these the
+   confirmation link bounces to `/auth/error`.
+2. **Authentication → Providers → Google** _(optional)_ — enable it, then set
+   `NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true` to show the button.
+
+Email confirmation is on by default. With it off, signup signs the user in
+immediately and skips the "check your inbox" screen — both paths are handled.
+
 Without `.env.local` the dev server still renders the UI — the session refresh
 logs a warning and is skipped — but anything touching auth or uploads will fail
 with an explicit message.
@@ -160,6 +181,7 @@ with an explicit message.
 | `CLOUDINARY_API_KEY`                | server     | Used to sign uploads                         |
 | `CLOUDINARY_API_SECRET`             | **server** | Must never reach the browser                 |
 | `NEXT_PUBLIC_SITE_URL`              | public     | Absolute base URL for metadata and redirects |
+| `NEXT_PUBLIC_ENABLE_GOOGLE_AUTH`    | public     | `"true"` shows the Google sign-in button     |
 
 Access goes through `src/lib/env.ts`, which validates with Zod and fails with a
 readable message instead of `undefined` sneaking into a request.
@@ -170,16 +192,28 @@ readable message instead of `undefined` sneaking into a request.
 
 ```
 src/
-├── app/                  # routes, layouts, loading/error/not-found states
+├── actions/              # Server Actions (auth, profile) — all Zod-validated
+├── app/
+│   ├── (auth)/           # sign-in, sign-up, check-email (signed-out only)
+│   ├── api/cloudinary/   # upload signing endpoint
+│   ├── auth/             # OAuth + email confirmation callback, error page
+│   ├── onboarding/       # username + city step
+│   └── settings/         # profile editing
 ├── components/
+│   ├── auth/             # Google button
 │   ├── brand/            # logo
-│   ├── layout/           # header, footer, desktop + mobile nav
+│   ├── forms/            # field, password, submit-button, form-alert
+│   ├── layout/           # header, footer, navs, user menu
+│   ├── upload/           # avatar uploader
 │   └── ui/               # shadcn primitives (themed, not restyled ad hoc)
-├── config/site.ts        # site metadata and navigation
+├── config/               # site metadata, navigation, feature flags
 ├── lib/
+│   ├── auth.ts           # cached session helpers and route guards
+│   ├── cloudinary.ts     # signing, verification, deletion (server only)
 │   ├── env.ts            # Zod-validated environment access
-│   └── supabase/         # server, browser and proxy clients + generated types
-└── proxy.ts              # session refresh (Next.js 16's middleware)
+│   ├── supabase/         # server, browser and proxy clients + generated types
+│   └── validations/      # Zod schemas shared by forms and actions
+└── proxy.ts              # session refresh + route protection
 supabase/migrations/      # SQL migrations
 docs/DESIGN.md            # the design system
 ```
@@ -189,7 +223,7 @@ docs/DESIGN.md            # the design system
 ## Roadmap
 
 - [x] **Phase 0** — scaffold, design tokens, Supabase clients, app shell
-- [ ] **Phase 1** — auth and user profiles
+- [x] **Phase 1** — auth, onboarding, profile editing, avatar uploads
 - [ ] **Phase 2** — pet profiles
 - [ ] **Phase 3** — posts and feed
 - [ ] **Phase 4** — likes, comments, follows

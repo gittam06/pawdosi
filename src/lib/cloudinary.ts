@@ -1,10 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 
-import { clientEnv, serverEnv } from "@/lib/env";
+import { cloudinaryEnv } from "@/lib/env";
 
 /**
- * Server-side Cloudinary access. `serverEnv()` throws if this module is ever
- * pulled into a client bundle, so the API secret cannot leak.
+ * Server-side Cloudinary access. `cloudinaryEnv()` throws if this module is
+ * ever pulled into a client bundle, so the API secret cannot leak.
  */
 
 /** Every asset we create lives under one of these prefixes. */
@@ -27,12 +27,12 @@ export const ALLOWED_IMAGE_TYPES = [
 ] as const;
 
 function configured() {
-  const { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = serverEnv();
+  const env = cloudinaryEnv();
 
   cloudinary.config({
-    cloud_name: clientEnv().NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    api_key: CLOUDINARY_API_KEY,
-    api_secret: CLOUDINARY_API_SECRET,
+    cloud_name: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
     secure: true,
   });
 
@@ -56,19 +56,19 @@ export type UploadSignature = {
  */
 export function signUpload(folderKey: CloudinaryFolderKey): UploadSignature {
   const client = configured();
-  const { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = serverEnv();
+  const env = cloudinaryEnv();
 
   const folder = CLOUDINARY_FOLDERS[folderKey];
   const timestamp = Math.round(Date.now() / 1000);
 
   const signature = client.utils.api_sign_request(
     { folder, timestamp },
-    CLOUDINARY_API_SECRET,
+    env.CLOUDINARY_API_SECRET,
   );
 
   return {
-    cloudName: clientEnv().NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    apiKey: CLOUDINARY_API_KEY,
+    cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    apiKey: env.CLOUDINARY_API_KEY,
     timestamp,
     folder,
     signature,

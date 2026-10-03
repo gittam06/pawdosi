@@ -1,6 +1,6 @@
-import { createBrowserClient } from "@supabase/ssr";
+﻿import { createBrowserClient } from "@supabase/ssr";
 
-import { clientEnv } from "@/lib/env";
+import { supabaseEnv } from "@/lib/env";
 import type { Database } from "@/lib/supabase/types";
 
 /**
@@ -10,7 +10,7 @@ import type { Database } from "@/lib/supabase/types";
  * this per component is cheap — there is still only one GoTrue instance.
  */
 export function createClient() {
-  const env = clientEnv();
+  const env = supabaseEnv();
 
   return createBrowserClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,

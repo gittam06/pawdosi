@@ -184,17 +184,46 @@ introduces the third grid column.
 Built on shadcn/ui primitives in `src/components/ui/`, which are themed through
 the CSS variables above — never restyled with one-off colours.
 
-| Component     | Location                      | Notes                                               |
-| ------------- | ----------------------------- | --------------------------------------------------- |
-| `Logo`        | `components/brand/logo.tsx`   | Marigold tile + paw mark; tilts on hover            |
-| `SiteHeader`  | `components/layout/`          | Sticky, translucent, blurred; server component      |
-| `MainNav`     | `components/layout/`          | Desktop (`md+`); active item on `primary-muted`     |
-| `MobileNav`   | `components/layout/`          | Bottom tab bar below `md`, respects safe-area inset |
-| `ThemeToggle` | `components/theme-toggle.tsx` | Light / dark / system; icon swap is pure CSS        |
+| Component        | Location                      | Notes                                               |
+| ---------------- | ----------------------------- | --------------------------------------------------- |
+| `Logo`           | `components/brand/logo.tsx`   | Marigold tile + paw mark; tilts on hover            |
+| `SiteHeader`     | `components/layout/`          | Sticky, translucent, blurred; server component      |
+| `MainNav`        | `components/layout/`          | Desktop (`md+`); active item on `primary-muted`     |
+| `MobileNav`      | `components/layout/`          | Bottom tab bar below `md`, respects safe-area inset |
+| `ThemeToggle`    | `components/theme-toggle.tsx` | Light / dark / system; icon swap is pure CSS        |
+| `UserMenu`       | `components/layout/`          | Account dropdown; sign-out is a real form post      |
+| `UserAvatar`     | `components/user-avatar.tsx`  | Cloudinary square crop with an initials fallback    |
+| `AvatarUploader` | `components/upload/`          | Signed direct upload, toast feedback                |
 
 Planned app components, each composed from the primitives rather than styled ad
 hoc: `PostCard`, `PetAvatar`, `PetCard`, `ReportCard`, `StatusBadge`,
 `EmptyState`.
+
+### Forms
+
+Forms post to Server Actions and read their result with `useActionState`. There
+is no form library: the Zod schema that validates on the server is the only
+source of truth, and the same error shape drives the UI.
+
+| Piece           | Location                              | Role                                          |
+| --------------- | ------------------------------------- | --------------------------------------------- |
+| `TextField`     | `components/forms/fields.tsx`         | Label + input + hint + errors, wired for a11y |
+| `TextAreaField` | `components/forms/fields.tsx`         | Same, for multi-line                          |
+| `PasswordField` | `components/forms/password-field.tsx` | Input with a reveal toggle                    |
+| `SubmitButton`  | `components/forms/submit-button.tsx`  | `useFormStatus` spinner and disabled state    |
+| `FormAlert`     | `components/forms/form-alert.tsx`     | Form-level success / failure summary          |
+
+Rules:
+
+- Field errors render directly under their input, in `destructive`, linked by
+  `aria-describedby` **and** announced via `role="alert"`.
+- The input gets `aria-invalid` so the error is also conveyed non-visually.
+- The form-level alert states what to do ("Please fix the highlighted fields"),
+  never a raw server message.
+- Text inputs are **controlled**. React 19 resets an uncontrolled form once its
+  action settles, which would erase everything the user typed on a validation
+  failure. Password inputs stay uncontrolled — clearing them is correct.
+- Buttons show a pending label, not just a spinner.
 
 ### Interaction
 

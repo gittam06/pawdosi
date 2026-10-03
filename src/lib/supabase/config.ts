@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Is Supabase configured for this environment?
  *
  * Read paths treat a missing configuration as "signed out" rather than
  * throwing: `next build` prerenders pages that render the header, and a build
  * must not require production secrets. The loud failure happens where it is
- * actionable — any actual auth or write call goes through `clientEnv()`, which
+ * actionable — any actual auth or write call goes through `supabaseEnv()`, which
  * throws with a message naming the missing variable.
  */
 

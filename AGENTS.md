@@ -53,6 +53,22 @@ commit message.
   `src/app/globals.css` under `@theme inline`.
 - shadcn's current CLI imports `cn` from the `cn` package and uses the single
   `radix-ui` package.
+- React 19 resets an uncontrolled `<form action={…}>` once the action settles,
+  so text inputs that must survive a validation error are controlled.
+- Pages that branch on the session need `export const dynamic = "force-dynamic"`:
+  a build without Supabase credentials would otherwise prerender them as
+  "signed out" and serve that snapshot to everyone.
+
+## Established patterns — follow these in later phases
+
+- Server Actions return an `ActionState` (`@/lib/action-state`); forms read it
+  with `useActionState` and render errors through `components/forms/*`.
+- Auth guards: `requireUser()` / `requireOnboardedProfile()` from `@/lib/auth`.
+  Never re-implement a session check inline.
+- Images: `POST /api/cloudinary/sign` → direct browser upload → a Server Action
+  that calls `verifyUploadedImage()` before storing anything, and
+  `deleteAsset()` for the asset it replaced.
+- Database types come from `@/lib/types`, never from the generated file.
 
 ## Build plan
 
@@ -62,7 +78,7 @@ wait for approval.
 
 0. Setup — scaffold, Supabase clients, design tokens, base layout. ✅
 1. Auth & user profiles — email/password, onboarding (username + city),
-   protected routes in `proxy.ts`, edit profile and avatar.
+   protected routes in `proxy.ts`, edit profile and avatar. ✅
 2. Pet profiles — CRUD, public page at `/pets/[slug]`.
 3. Posts & feed — 1–4 images + caption, home feed from followed pets, Explore,
    post detail, cursor pagination (`created_at` + `id`), never offset.

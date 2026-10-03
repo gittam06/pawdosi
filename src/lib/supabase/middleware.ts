@@ -1,8 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+﻿import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 
-import { clientEnv } from "@/lib/env";
+import { supabaseEnv } from "@/lib/env";
 import type { Database } from "@/lib/supabase/types";
 
 /**
@@ -17,7 +17,7 @@ export async function updateSession(request: NextRequest): Promise<{
   user: User | null;
 }> {
   let response = NextResponse.next({ request });
-  const env = clientEnv();
+  const env = supabaseEnv();
 
   const supabase = createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
