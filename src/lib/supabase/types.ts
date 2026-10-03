@@ -1,13 +1,13 @@
 /**
  * Database types.
  *
- * GENERATED FILE — do not edit by hand. Regenerate after every migration:
+ * This file mirrors the output of
  *
- *   npm run db:types
+ *   npm run db:types     # supabase gen types typescript --linked
  *
- * The schema is still empty at this point (Phase 0 is scaffolding only); the
- * shape below is exactly what `supabase gen types typescript` emits for an
- * empty public schema, so swapping it out later is a clean overwrite.
+ * Run that command after every migration and let it overwrite this file —
+ * it is written in the generator's shape so the diff stays clean. It is
+ * hand-maintained only until the Supabase project is linked.
  */
 
 export type Json =
@@ -20,7 +20,52 @@ export type Json =
 
 export type Database = {
   public: {
-    Tables: { [_ in never]: never };
+    Tables: {
+      profiles: {
+        Row: {
+          id: string;
+          username: string | null;
+          display_name: string;
+          avatar_url: string | null;
+          avatar_public_id: string | null;
+          city: string | null;
+          bio: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          username?: string | null;
+          display_name: string;
+          avatar_url?: string | null;
+          avatar_public_id?: string | null;
+          city?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          username?: string | null;
+          display_name?: string;
+          avatar_url?: string | null;
+          avatar_public_id?: string | null;
+          city?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey";
+            columns: ["id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+    };
     Views: { [_ in never]: never };
     Functions: { [_ in never]: never };
     Enums: { [_ in never]: never };
