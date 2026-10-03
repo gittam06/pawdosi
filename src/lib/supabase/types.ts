@@ -119,6 +119,81 @@ export type Database = {
           },
         ]
       }
+      lost_found_reports: {
+        Row: {
+          city: string
+          contact_note: string | null
+          created_at: string
+          description: string
+          id: string
+          image_public_id: string | null
+          image_url: string | null
+          last_seen_at: string
+          locality: string
+          pet_id: string | null
+          reporter_id: string
+          reunited_at: string | null
+          species: Database["public"]["Enums"]["pet_species"]
+          status: Database["public"]["Enums"]["report_status"]
+          title: string
+          type: Database["public"]["Enums"]["report_type"]
+          updated_at: string
+        }
+        Insert: {
+          city: string
+          contact_note?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          image_public_id?: string | null
+          image_url?: string | null
+          last_seen_at: string
+          locality: string
+          pet_id?: string | null
+          reporter_id: string
+          reunited_at?: string | null
+          species: Database["public"]["Enums"]["pet_species"]
+          status?: Database["public"]["Enums"]["report_status"]
+          title: string
+          type: Database["public"]["Enums"]["report_type"]
+          updated_at?: string
+        }
+        Update: {
+          city?: string
+          contact_note?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          image_public_id?: string | null
+          image_url?: string | null
+          last_seen_at?: string
+          locality?: string
+          pet_id?: string | null
+          reporter_id?: string
+          reunited_at?: string | null
+          species?: Database["public"]["Enums"]["pet_species"]
+          status?: Database["public"]["Enums"]["report_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["report_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lost_found_reports_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lost_found_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pets: {
         Row: {
           avatar_public_id: string | null
@@ -301,6 +376,8 @@ export type Database = {
     Enums: {
       pet_gender: "male" | "female" | "unknown"
       pet_species: "dog" | "cat" | "bird" | "rabbit" | "other"
+      report_status: "open" | "reunited"
+      report_type: "lost" | "found"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -430,6 +507,8 @@ export const Constants = {
     Enums: {
       pet_gender: ["male", "female", "unknown"],
       pet_species: ["dog", "cat", "bird", "rabbit", "other"],
+      report_status: ["open", "reunited"],
+      report_type: ["lost", "found"],
     },
   },
 } as const
