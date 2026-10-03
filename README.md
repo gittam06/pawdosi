@@ -8,8 +8,8 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 5 complete** — authentication, pet profiles, posts and feed,
-> the social layer, and the Lost &amp; Found board. See [Roadmap](#roadmap).
+> Status: **feature complete** — all six build phases are done. Notifications,
+> search, SEO, seed data and tests are in. See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -33,9 +33,13 @@ families.
 | ------------------------------------ | --------------------------------------- |
 | ![](docs/screenshots/lost-found.png) | ![](docs/screenshots/report-detail.png) |
 
-| Mobile                                |
-| ------------------------------------- |
-| ![](docs/screenshots/home-mobile.png) |
+| Feed                           | Notifications                           |
+| ------------------------------ | --------------------------------------- |
+| ![](docs/screenshots/feed.png) | ![](docs/screenshots/notifications.png) |
+
+| Search                           | Mobile                                |
+| -------------------------------- | ------------------------------------- |
+| ![](docs/screenshots/search.png) | ![](docs/screenshots/home-mobile.png) |
 
 ---
 
@@ -78,10 +82,17 @@ families.
   group. Open lost reports are visually prominent; reunited ones are
   celebrated rather than hidden. Reports are readable signed-out, because the
   person who recognises the animal may not have an account.
-
-**Planned**
-
-- Notifications, pet search, infinite scroll, SEO + Open Graph images
+- Notifications for likes, comments and follows, with an unread badge. Written
+  by database triggers rather than by the app, so they cannot be forged or
+  forgotten — and un-liking withdraws its own notification.
+- Pet search by name or breed
+- Infinite scroll on every list, with the "Load more" button kept for keyboard
+  and no-JavaScript use
+- `sitemap.xml` and `robots.txt`, plus per-page Open Graph images for pets,
+  posts and reports
+- Seed script with demo owners, pets, posts, follows, likes, comments and a
+  populated Lost &amp; Found board
+- Unit tests (Vitest) and an end-to-end journey test (Playwright)
 
 ---
 
@@ -197,14 +208,43 @@ with an explicit message.
 
 ### Scripts
 
-| Script              | What it does                           |
-| ------------------- | -------------------------------------- |
-| `npm run dev`       | Dev server (Turbopack)                 |
-| `npm run build`     | Production build, fails on type errors |
-| `npm run typecheck` | `tsc --noEmit`                         |
-| `npm run lint`      | ESLint                                 |
-| `npm run format`    | Prettier (with Tailwind class sorting) |
-| `npm run db:types`  | Regenerate `src/lib/supabase/types.ts` |
+| Script               | What it does                           |
+| -------------------- | -------------------------------------- |
+| `npm run dev`        | Dev server (Turbopack)                 |
+| `npm run build`      | Production build, fails on type errors |
+| `npm run typecheck`  | `tsc --noEmit`                         |
+| `npm run lint`       | ESLint                                 |
+| `npm run format`     | Prettier (with Tailwind class sorting) |
+| `npm run db:types`   | Regenerate `src/lib/supabase/types.ts` |
+| `npm test`           | Unit tests (Vitest)                    |
+| `npm run test:e2e`   | End-to-end journey (Playwright)        |
+| `npm run seed`       | Add demo data                          |
+| `npm run seed:reset` | Remove previous demo data, then re-add |
+
+### Demo data
+
+```bash
+npm run seed:reset      # wipes previously seeded accounts, then seeds
+```
+
+Seeded owners sign in with `<username>@pawpals-demo.local` and the password
+printed by the script — for example `aarav_s@pawpals-demo.local`. `--reset`
+only ever touches accounts on that domain, and deletes their Cloudinary assets
+along with them.
+
+Source images come from Lorem Picsum, which is licence-free and deterministic.
+Swap `sourceImage` in `scripts/seed.mts` for real pet photography before taking
+portfolio screenshots.
+
+### Tests
+
+`npm test` is pure unit tests — slugs, ages, and the Zod schemas — and needs
+nothing running.
+
+`npm run test:e2e` drives a real browser against a real Supabase project, so it
+needs `.env.local` (the config loads it) and will start the dev server itself.
+It signs up, onboards, creates a pet, posts, and checks the post appears on the
+pet's page, then deletes the account it created.
 
 ---
 
@@ -266,4 +306,5 @@ docs/DESIGN.md            # the design system
 - [x] **Phase 3** — posts, home feed, Explore, cursor pagination
 - [x] **Phase 4** — likes, comments, follows, counts
 - [x] **Phase 5** — Lost & Found board, filters, reunited state
-- [ ] **Phase 6** — notifications, search, SEO, seed data, tests, deploy
+- [x] **Phase 6** — notifications, search, infinite scroll, SEO, seed data,
+      tests

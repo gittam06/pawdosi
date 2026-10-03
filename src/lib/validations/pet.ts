@@ -7,11 +7,16 @@ const trimmed = z.string().trim();
 /** Earliest plausible birth date; mirrors `pets_birth_date_floor` in the DB. */
 const EARLIEST_BIRTH_DATE = "1980-01-01";
 
+/**
+ * An untouched optional field posts "", which means "no value". The transform
+ * must follow `.optional()` rather than sit in a `.or()` branch — a union
+ * takes the first matching branch, and `z.string().max()` matches "".
+ */
 const optionalText = (max: number, message: string) =>
   trimmed
     .max(max, message)
     .optional()
-    .or(z.literal("").transform(() => undefined));
+    .transform((value) => value || undefined);
 
 export const petNameSchema = trimmed
   .min(1, "Your pet needs a name.")
@@ -32,7 +37,7 @@ export const petGenderSchema = z.enum(GENDER_VALUES, {
  */
 export const petBirthDateSchema = trimmed
   .optional()
-  .or(z.literal("").transform(() => undefined))
+  .transform((value) => value || undefined)
   .refine((value) => !value || /^\d{4}-\d{2}-\d{2}$/.test(value), {
     message: "Use the date picker.",
   })

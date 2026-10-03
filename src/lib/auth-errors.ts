@@ -15,6 +15,12 @@ const MESSAGES: Record<string, string> = {
     "An account with that email already exists. Sign in instead.",
   email_exists: "An account with that email already exists. Sign in instead.",
   weak_password: "That password is too weak. Try a longer one.",
+  // Supabase refuses example.com, disposable domains and the like. Reporting
+  // this as a server fault blames us for the user's input.
+  email_address_invalid:
+    "That email address was rejected. Try a different one.",
+  email_address_not_authorized:
+    "That email address is not allowed to sign up here.",
   over_request_rate_limit: "Too many attempts. Try again in a few minutes.",
   over_email_send_rate_limit:
     "Too many emails sent. Wait a few minutes and try again.",

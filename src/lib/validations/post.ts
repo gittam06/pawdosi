@@ -13,10 +13,12 @@ export const postImageSchema = z.object({
 
 export const postSchema = z.object({
   petId: z.uuid("Pick which pet is posting."),
+  // Transform after `.optional()`, not as a `.or()` branch: a union takes the
+  // first matching branch and `z.string().max()` matches "".
   caption: trimmed
     .max(CAPTION_LIMIT, `At most ${CAPTION_LIMIT} characters.`)
     .optional()
-    .or(z.literal("").transform(() => undefined)),
+    .transform((value) => value || undefined),
   images: z
     .array(postImageSchema)
     .min(1, "Add at least one photo.")

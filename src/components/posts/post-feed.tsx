@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { loadMorePostsAction } from "@/actions/feed";
+import { LoadMoreTrigger } from "@/components/load-more-trigger";
 import { PostCard } from "@/components/posts/post-card";
-import { Button } from "@/components/ui/button";
 import type { PostCursor, PostWithRelations } from "@/lib/types";
 import type { FeedScope } from "@/lib/validations/feed";
 
@@ -66,25 +65,12 @@ export function PostFeed({
         ))}
       </ul>
 
-      {cursor ? (
-        <div className="flex justify-center pt-2">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={loadMore}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="animate-spin" aria-hidden />
-                Loading…
-              </>
-            ) : (
-              "Load more"
-            )}
-          </Button>
-        </div>
-      ) : null}
+      <LoadMoreTrigger
+        hasMore={cursor !== null}
+        isPending={isPending}
+        onLoadMore={loadMore}
+        label="Load more posts"
+      />
     </div>
   );
 }

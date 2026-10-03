@@ -54,6 +54,14 @@ export type ReportWithReporter = Report & {
 /** Keyset cursor, same shape and reasoning as the post feed's. */
 export type ReportCursor = { createdAt: string; id: string };
 
+export type Notification = Tables["notifications"]["Row"];
+export type NotificationType = Enums["notification_type"];
+
+export type NotificationWithActor = Notification & {
+  actor: Pick<Profile, "id" | "username" | "display_name" | "avatar_url">;
+  pet: Pick<Pet, "id" | "name" | "slug"> | null;
+};
+
 /** Keyset cursor. Ordering by created_at alone is not stable under ties. */
 export type PostCursor = { createdAt: string; id: string };
 

@@ -13,7 +13,12 @@ import { updateSession } from "@/lib/supabase/middleware";
  */
 
 /** Everything under these requires a signed-in user. */
-const PROTECTED_PREFIXES = ["/onboarding", "/settings"];
+const PROTECTED_PREFIXES = [
+  "/onboarding",
+  "/settings",
+  "/notifications",
+  "/feed",
+];
 
 /**
  * Exact paths only. `/pets` and `/pets/new` are private, but `/pets/<slug>`

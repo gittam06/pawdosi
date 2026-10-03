@@ -38,10 +38,12 @@ export const reportSchema = z.object({
   city: trimmed.min(2, "At least 2 characters.").max(60, "At most 60."),
   locality: trimmed.min(2, "Which area?").max(80, "At most 80 characters."),
   lastSeenAt: lastSeenAtSchema,
+  // Transform after `.optional()`, not as a `.or()` branch: a union takes the
+  // first matching branch and `z.string().max()` matches "".
   contactNote: trimmed
     .max(CONTACT_NOTE_LIMIT, `At most ${CONTACT_NOTE_LIMIT} characters.`)
     .optional()
-    .or(z.literal("").transform(() => undefined)),
+    .transform((value) => value || undefined),
   // `nullish`, not `optional`: when the pet picker is not rendered at all,
   // `formData.get("petId")` is null rather than undefined, and a schema that
   // only tolerates undefined fails on a field the user cannot even see.

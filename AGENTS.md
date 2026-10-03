@@ -104,6 +104,18 @@ commit message.
   two cannot share the empty state.
 - Select fields are controlled wherever a rejected submission should keep the
   choice: React 19's form reset clears an uncontrolled Select too.
+- Optional text fields must transform **after** `.optional()`, not in a `.or()`
+  branch. A Zod union takes the first matching branch and `z.string().max()`
+  matches `""`, so the empty-string branch never runs and blanks reach the
+  database as `""` instead of null. A unit test caught this one.
+- Notifications are written by database triggers, never by the app, and the
+  table has no INSERT policy. A notification a user can create is one they can
+  forge.
+- A Server Action used as a bare `<form action>` takes only `FormData`. It
+  cannot return `ActionState`, so report failures by redirecting with a flag.
+- Supabase rejects `@example.com` and similar on public signup
+  (`email_address_invalid`) and rate-limits auth emails to a couple an hour on
+  the free tier. Neither is usable in an automated signup test.
 
 ## Build plan
 
@@ -123,6 +135,6 @@ wait for approval.
 5. Lost & Found — reports with photo/area/last-seen, filters, detail page,
    "Reunited" state. ✅
 6. Polish & ship — notifications, search, infinite scroll, SEO + OG images,
-   seed script, Vitest + Playwright tests, deploy.
+   seed script, Vitest + Playwright tests. ✅ (Deploy is the remaining step.)
 
 Out of scope for now: mobile app, DMs, video, stories, ads, admin dashboard.

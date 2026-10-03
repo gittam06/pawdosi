@@ -51,10 +51,18 @@ export const citySchema = trimmed
   .min(2, "At least 2 characters.")
   .max(60, "At most 60 characters.");
 
+/**
+ * An untouched optional field posts "", which means "no value".
+ *
+ * The transform has to come *after* `.optional()`, not as a `.or()` branch:
+ * in a union Zod takes the first branch that matches, and `z.string().max()`
+ * happily matches "" — so the empty-string branch would never run and a blank
+ * bio would be stored as "" rather than null.
+ */
 export const bioSchema = trimmed
   .max(300, "At most 300 characters.")
   .optional()
-  .or(z.literal("").transform(() => undefined));
+  .transform((value) => value || undefined);
 
 export const onboardingSchema = z.object({
   username: usernameSchema,

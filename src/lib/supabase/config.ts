@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Is Supabase configured for this environment?
  *
  * Read paths treat a missing configuration as "signed out" rather than

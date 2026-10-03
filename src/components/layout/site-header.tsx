@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
 import { MainNav } from "@/components/layout/main-nav";
+import { NotificationBell } from "@/components/layout/notification-bell";
+import { PetSearch } from "@/components/layout/pet-search";
 import { UserMenu } from "@/components/layout/user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getCurrentProfile } from "@/lib/auth";
@@ -22,10 +24,14 @@ export async function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2">
           <MainNav />
+          <PetSearch className="hidden lg:block" />
           <ThemeToggle />
 
           {profile ? (
-            <UserMenu profile={profile} />
+            <>
+              <NotificationBell />
+              <UserMenu profile={profile} />
+            </>
           ) : (
             <>
               <Button

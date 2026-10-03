@@ -43,6 +43,12 @@ yarn-error.log*
 # supabase cli local state (contains the linked project ref)
 supabase/.temp/
 
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+.playwright/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
