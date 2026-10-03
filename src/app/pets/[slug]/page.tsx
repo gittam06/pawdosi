@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Camera, ImageIcon, Pencil } from "lucide-react";
+import { CalendarDays, Camera, ImageIcon, Pencil, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/empty-state";
 import { PetAvatar } from "@/components/pets/pet-avatar";
 import { SpeciesBadge } from "@/components/pets/species-badge";
+import { PostFeed } from "@/components/posts/post-feed";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user-avatar";
 import { genderLabel } from "@/config/pets";
@@ -13,6 +14,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { avatarUrl } from "@/lib/cloudinary-url";
 import { formatAge, formatBirthDate } from "@/lib/pet-age";
 import { getPetBySlug } from "@/lib/pets";
+import { countPetFollowers, countPetPosts, listPetPosts } from "@/lib/posts";
 
 type PetPageProps = { params: Promise<{ slug: string }> };
 
@@ -49,7 +51,13 @@ export default async function PetPage({ params }: PetPageProps) {
 
   if (!pet) notFound();
 
-  const user = await getCurrentUser();
+  const [user, followers, postCount, postPage] = await Promise.all([
+    getCurrentUser(),
+    countPetFollowers(pet.id),
+    countPetPosts(pet.id),
+    listPetPosts(pet.id, null),
+  ]);
+
   const isOwner = user?.id === pet.owner_id;
 
   const age = formatAge(pet.birth_date);
@@ -104,15 +112,18 @@ export default async function PetPage({ params }: PetPageProps) {
             <p className="max-w-prose text-sm text-pretty">{pet.bio}</p>
           ) : null}
 
-          {/* Counts are wired up in Phases 3 and 4; the shape is here now. */}
           <dl className="flex items-center gap-6 text-sm">
             <div className="flex items-baseline gap-1.5">
-              <dt className="order-2 text-muted-foreground">followers</dt>
-              <dd className="order-1 font-heading font-bold">0</dd>
+              <dt className="order-2 text-muted-foreground">
+                {followers === 1 ? "follower" : "followers"}
+              </dt>
+              <dd className="order-1 font-heading font-bold">{followers}</dd>
             </div>
             <div className="flex items-baseline gap-1.5">
-              <dt className="order-2 text-muted-foreground">posts</dt>
-              <dd className="order-1 font-heading font-bold">0</dd>
+              <dt className="order-2 text-muted-foreground">
+                {postCount === 1 ? "post" : "posts"}
+              </dt>
+              <dd className="order-1 font-heading font-bold">{postCount}</dd>
             </div>
           </dl>
 
@@ -153,15 +164,35 @@ export default async function PetPage({ params }: PetPageProps) {
           Posts by {pet.name}
         </h2>
 
-        <EmptyState
-          icon={isOwner ? Camera : ImageIcon}
-          title={isOwner ? "No posts yet" : `${pet.name} has not posted yet`}
-          description={
-            isOwner
-              ? "Moments you post as this pet will show up here."
-              : "Follow this pet to see new moments in your feed."
-          }
-        />
+        {postPage.posts.length === 0 ? (
+          <EmptyState
+            icon={isOwner ? Camera : ImageIcon}
+            title={isOwner ? "No posts yet" : `${pet.name} has not posted yet`}
+            description={
+              isOwner
+                ? "Moments you post as this pet will show up here."
+                : "Follow this pet to see new moments in your feed."
+            }
+            action={
+              isOwner ? (
+                <Button asChild className="mt-1 h-10">
+                  <Link href="/posts/new">
+                    <Plus aria-hidden />
+                    Create a post
+                  </Link>
+                </Button>
+              ) : undefined
+            }
+          />
+        ) : (
+          <div className="mx-auto max-w-feed">
+            <PostFeed
+              scope={{ type: "pet", petId: pet.id }}
+              initialPosts={postPage.posts}
+              initialCursor={postPage.nextCursor}
+            />
+          </div>
+        )}
       </section>
     </div>
   );

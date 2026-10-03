@@ -8,8 +8,8 @@ like and comment. Its signature feature is something the big photo apps do not
 have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
 families.
 
-> Status: **Phase 2 complete** — design system, app shell, authentication, and
-> pet profiles with public pages. See [Roadmap](#roadmap).
+> Status: **Phase 3 complete** — design system, app shell, authentication, pet
+> profiles, and posts with a paginated feed. See [Roadmap](#roadmap).
 
 🔗 **Live demo:** _coming soon_
 
@@ -21,9 +21,13 @@ families.
 | ------------------------------------ | ----------------------------------- |
 | ![](docs/screenshots/home-light.png) | ![](docs/screenshots/home-dark.png) |
 
-| Mobile                                | Pet profile · Lost & Found |
-| ------------------------------------- | -------------------------- |
-| ![](docs/screenshots/home-mobile.png) | _coming in Phases 2 and 5_ |
+| Pet profile                           | Explore                           |
+| ------------------------------------- | --------------------------------- |
+| ![](docs/screenshots/pet-profile.png) | ![](docs/screenshots/explore.png) |
+
+| Composer                           | Mobile                                |
+| ---------------------------------- | ------------------------------------- |
+| ![](docs/screenshots/composer.png) | ![](docs/screenshots/home-mobile.png) |
 
 ---
 
@@ -50,10 +54,15 @@ families.
   breed, birthday, gender and bio
 - Public pet pages at `/pets/[slug]` with per-pet Open Graph metadata; slugs
   are stable, so a shared link survives a rename
+- Posts as a pet with 1–4 images and a caption; images upload before publish,
+  and a failed publish cleans up every asset it accepted
+- Home feed from followed pets, Explore for everyone, and per-pet grids, all
+  on keyset (cursor) pagination rather than offset
+- Post detail pages with Open Graph images, and post deletion that removes the
+  Cloudinary assets with it
 
 **Planned**
 
-- Posts with 1–4 Cloudinary images, home feed from followed pets, Explore
 - Likes (optimistic), comments, follow/unfollow pets
 - Lost & Found reports with photo, area, last-seen time, filters and a
   shareable detail page, markable as _Reunited_
@@ -152,8 +161,17 @@ Two things are configured outside the migrations:
    deployment, and add `http://localhost:3000/auth/callback` plus
    `https://<your-domain>/auth/callback` as redirect URLs. Without these the
    confirmation link bounces to `/auth/error`.
-2. **Authentication → Providers → Google** _(optional)_ — enable it, then set
-   `NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true` to show the button.
+2. **Google sign-in** — three steps, in this order:
+   1. Google Cloud Console → **APIs & Services → Credentials → Create OAuth
+      client ID → Web application**. Add
+      `https://<project-ref>.supabase.co/auth/v1/callback` as an authorised
+      redirect URI. Google, not Supabase, owns this redirect.
+   2. Supabase → **Authentication → Providers → Google**: enable it and paste
+      the client ID and secret.
+   3. Set `NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true` to show the button.
+
+   With the flag on but the provider not yet configured, the button reports
+   "Google sign-in is not configured yet" rather than failing silently.
 
 Email confirmation is on by default. With it off, signup signs the user in
 immediately and skips the "check your inbox" screen — both paths are handled.
@@ -230,7 +248,7 @@ docs/DESIGN.md            # the design system
 - [x] **Phase 0** — scaffold, design tokens, Supabase clients, app shell
 - [x] **Phase 1** — auth, onboarding, profile editing, avatar uploads
 - [x] **Phase 2** — pet profiles, public pet pages
-- [ ] **Phase 3** — posts and feed
+- [x] **Phase 3** — posts, home feed, Explore, cursor pagination
 - [ ] **Phase 4** — likes, comments, follows
 - [ ] **Phase 5** — Lost & Found
 - [ ] **Phase 6** — notifications, search, SEO, seed data, tests, deploy

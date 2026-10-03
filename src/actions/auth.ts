@@ -20,6 +20,23 @@ function safeNext(value: FormDataEntryValue | null, fallback: string): string {
   return value;
 }
 
+/**
+ * Does the OAuth provider actually answer?
+ *
+ * A configured provider replies with a redirect to Google; an unconfigured one
+ * replies 400. Network trouble is treated as "enabled" so a blip cannot block
+ * a sign-in that would otherwise work.
+ */
+async function providerIsEnabled(authorizeUrl: string): Promise<boolean> {
+  try {
+    const response = await fetch(authorizeUrl, { redirect: "manual" });
+    return response.status !== 400;
+  } catch (error) {
+    console.error("Could not pre-flight the OAuth provider", error);
+    return true;
+  }
+}
+
 export async function signUpAction(
   _prevState: ActionState,
   formData: FormData,
@@ -95,6 +112,16 @@ export async function signInWithGoogleAction(
 
   if (error) return failure(authErrorMessage(error));
   if (!data.url) return failure("Could not start Google sign-in.");
+
+  // signInWithOAuth builds the authorize URL locally — it never contacts
+  // Supabase — so a disabled provider is only discovered by following the
+  // link, which dumps the user on a raw 400 JSON page. One pre-flight request
+  // turns that dead end into a sentence they can act on.
+  if (!(await providerIsEnabled(data.url))) {
+    return failure(
+      "Google sign-in is not set up yet. Enable the Google provider in your Supabase project first.",
+    );
+  }
 
   redirect(data.url);
 }

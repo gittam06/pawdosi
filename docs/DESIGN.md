@@ -199,8 +199,17 @@ the CSS variables above — never restyled with one-off colours.
 | `SpeciesBadge`  | `components/pets/`            | Icon plus label, never colour alone                 |
 | `EmptyState`    | `components/empty-state.tsx`  | Dashed panel: icon, what goes here, the action      |
 
+| `PostCard` | `components/posts/` | Pet header, images, caption; renders on either side |
+| `PostImages` | `components/posts/` | Layout by count: 1 contained, 2–4 in a square grid |
+| `PostFeed` | `components/posts/` | First page from the server, later pages appended |
+| `PostComposer` | `components/posts/` | Upload-then-publish, with per-image removal |
+
+Images are delivered by Cloudinary with `f_auto,q_auto`, and Next's optimizer
+is switched off for them (`CloudinaryImage`): running both would re-process an
+image that is already the right size and format, and bill for it.
+
 Planned app components, each composed from the primitives rather than styled ad
-hoc: `PostCard`, `ReportCard`, `StatusBadge`.
+hoc: `ReportCard`, `StatusBadge`.
 
 ### Forms
 

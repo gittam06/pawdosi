@@ -75,6 +75,16 @@ commit message.
 - Icons chosen by data go through a `switch`-based component (see
   `components/pets/species-icon.tsx`). Picking a component out of a map during
   render trips `react-hooks/static-components`.
+- A `"use server"` module may export **only async functions**. Schemas, types
+  and constants belong elsewhere (`lib/validations/*`); exporting a Zod object
+  from an actions file 500s every page that imports it, with a stack trace
+  pointing at the import rather than the cause.
+- `signInWithOAuth` builds the authorize URL locally and never contacts
+  Supabase, so a disabled provider surfaces only after the redirect. The action
+  pre-flights the URL to turn that into a readable message.
+- Lists paginate with a keyset cursor on `(created_at, id)`. Cursors arrive
+  from the client and are interpolated into a PostgREST filter, so they are
+  Zod-validated first.
 
 ## Build plan
 
@@ -87,7 +97,9 @@ wait for approval.
    protected routes in `proxy.ts`, edit profile and avatar. ✅
 2. Pet profiles — CRUD, public page at `/pets/[slug]`. ✅
 3. Posts & feed — 1–4 images + caption, home feed from followed pets, Explore,
-   post detail, cursor pagination (`created_at` + `id`), never offset.
+   post detail, cursor pagination (`created_at` + `id`), never offset. ✅
+   (The `follows` table shipped here because the feed needs it; Phase 4 adds
+   the follow/unfollow UI and the counts.)
 4. Social — likes (optimistic), comments, follow/unfollow pets, counts.
 5. Lost & Found — reports with photo/area/last-seen, filters, detail page,
    "Reunited" state.
