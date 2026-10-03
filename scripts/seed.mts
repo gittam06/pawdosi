@@ -2,8 +2,9 @@
  * Seeds a demo dataset: owners, pets, posts, follows, likes, comments and a
  * Lost & Found board.
  *
- *   npm run seed           # add demo data
- *   npm run seed -- --reset   # remove previous demo data first
+ *   npm run seed              # add demo data
+ *   npm run seed:reset        # remove previous demo data, then re-add it
+ *   npm run seed:clean        # remove demo data and stop (for a live launch)
  *
  * Run with Node's own TypeScript support and --env-file, so there is no build
  * step and no extra dependency.
@@ -632,11 +633,17 @@ async function seed(): Promise<void> {
 
 // --- entry point ------------------------------------------------------------
 
-const shouldReset = process.argv.includes("--reset");
+const resetOnly = process.argv.includes("--reset-only");
+const shouldReset = resetOnly || process.argv.includes("--reset");
 
 try {
   if (shouldReset) await reset();
-  await seed();
+
+  if (resetOnly) {
+    console.log("\nDemo data removed. Nothing seeded.");
+  } else {
+    await seed();
+  }
 } catch (error) {
   console.error("\nSeeding failed:", error);
   process.exit(1);

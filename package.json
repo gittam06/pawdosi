@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "seed": "node --env-file=.env.local scripts/seed.mts",
     "seed:reset": "node --env-file=.env.local scripts/seed.mts --reset",
+    "seed:clean": "node --env-file=.env.local scripts/seed.mts --reset-only",
     "db:types": "npx supabase gen types typescript --linked > src/lib/supabase/types.ts"
   },
   "dependencies": {

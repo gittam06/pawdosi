@@ -220,11 +220,13 @@ with an explicit message.
 | `npm run test:e2e`   | End-to-end journey (Playwright)        |
 | `npm run seed`       | Add demo data                          |
 | `npm run seed:reset` | Remove previous demo data, then re-add |
+| `npm run seed:clean` | Remove demo data and stop              |
 
 ### Demo data
 
 ```bash
 npm run seed:reset      # wipes previously seeded accounts, then seeds
+npm run seed:clean      # wipes them and stops — for a clean public launch
 ```
 
 Seeded owners sign in with `<username>@pawpals-demo.local` and the password
@@ -295,6 +297,56 @@ src/
 supabase/migrations/      # SQL migrations
 docs/DESIGN.md            # the design system
 ```
+
+---
+
+## Deploying to Vercel
+
+The app is deployment-ready; these are the steps, in order.
+
+**1. Push to GitHub**
+
+```bash
+git remote add origin https://github.com/<you>/pawpals.git
+git push -u origin main
+```
+
+**2. Import the repo on Vercel** — framework detection handles the rest; there
+is no build configuration to add.
+
+**3. Set the environment variables** on the Vercel project (Settings →
+Environment Variables), for Production _and_ Preview:
+
+| Variable                            | Value                                       |
+| ----------------------------------- | ------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`          | same as local                               |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | same as local                               |
+| `SUPABASE_SERVICE_ROLE_KEY`         | same as local — **never** `NEXT_PUBLIC_`    |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | same as local                               |
+| `CLOUDINARY_API_KEY`                | same as local                               |
+| `CLOUDINARY_API_SECRET`             | same as local                               |
+| `NEXT_PUBLIC_SITE_URL`              | `https://<your-domain>` — **not** localhost |
+
+`NEXT_PUBLIC_SITE_URL` is the one that is easy to forget. It is the
+`metadataBase` behind every Open Graph image, so leaving it as localhost makes
+every shared link preview break.
+
+**4. Point Supabase at the deployment** — Authentication → URL Configuration:
+set the Site URL to the production domain and add
+`https://<your-domain>/auth/callback` to the redirect URLs. Without this,
+confirmation links bounce to `/auth/error`.
+
+**5. If Google sign-in is on**, add
+`https://<project-ref>.supabase.co/auth/v1/callback` to the authorised redirect
+URIs in Google Cloud Console — and move the OAuth consent screen out of Testing
+mode, or only listed test users will be able to sign in.
+
+**6. Decide about demo data.** `npm run seed` against the production project
+fills the site with content for a portfolio visitor; `npm run seed:clean`
+leaves it empty. Either is a one-command change.
+
+Migrations are applied with `npx supabase db push` against the linked project —
+they are not run by the Vercel build.
 
 ---
 
