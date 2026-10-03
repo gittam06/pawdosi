@@ -40,6 +40,9 @@ yarn-error.log*
 # playwright mcp scratch output
 .playwright-mcp/
 
+# supabase cli local state (contains the linked project ref)
+supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

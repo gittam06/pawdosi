@@ -122,7 +122,17 @@ export function ImageUploader({
         { method: "POST", body: upload },
       );
 
-      if (!uploadResponse.ok) throw new Error("Cloudinary rejected the image.");
+      if (!uploadResponse.ok) {
+        // Surface Cloudinary's own wording — "cloud_name mismatch" and
+        // "Invalid Signature" are configuration mistakes, and a generic
+        // message would send someone hunting in the wrong place.
+        const body = await uploadResponse.json().catch(() => null);
+        throw new Error(
+          body?.error?.message
+            ? `Cloudinary rejected the image: ${body.error.message}`
+            : "Cloudinary rejected the image.",
+        );
+      }
 
       const asset: { public_id: string; secure_url: string } =
         await uploadResponse.json();
