@@ -15,7 +15,7 @@ have one.
 > Status: **live**. All six build phases are done and the app is deployed.
 > See [Roadmap](#roadmap).
 
-🔗 **Live:** <https://pawdosi-swart.vercel.app> ·
+🔗 **Live:** <https://pawdosi.vercel.app> ·
 **Source:** <https://github.com/gittam06/pawdosi>
 
 ---
