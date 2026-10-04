@@ -1,0 +1,23 @@
+# Supabase project configuration, version-controlled.
+#
+# Deliberately minimal. `supabase config push` leaves anything this file does
+# not declare untouched, so only the auth URLs are managed here — the Google
+# provider's credentials, email templates and rate limits stay owned by the
+# dashboard and are not at risk of being clobbered by a push.
+#
+#   npx supabase config diff   # preview
+#   npx supabase config push   # apply
+project_id = "hzgraubbumbohgszvbny"
+
+[auth]
+# Where Supabase sends people when a redirect is not specified, and the
+# {{ .SiteURL }} used in confirmation emails. Must be the live domain, or
+# confirmation links point somewhere that no longer exists.
+site_url = "https://pawdosi.vercel.app"
+
+# Every URL an auth provider is allowed to return to. Localhost stays listed
+# so local development keeps working against the same project.
+additional_redirect_urls = [
+  "https://pawdosi.vercel.app/auth/callback",
+  "http://localhost:3000/auth/callback",
+]
