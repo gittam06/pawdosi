@@ -5,7 +5,7 @@ import { CalendarDays, Camera, ImageIcon, Pencil, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/empty-state";
 import { PetAvatar } from "@/components/pets/pet-avatar";
-import { SpeciesBadge } from "@/components/pets/species-badge";
+import { CommunityBadge, SpeciesBadge } from "@/components/pets/species-badge";
 import { PostFeed } from "@/components/posts/post-feed";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user-avatar";
@@ -87,6 +87,7 @@ export default async function PetPage({ params }: PetPageProps) {
               {pet.name}
             </h1>
             <SpeciesBadge species={pet.species} />
+            {pet.is_community ? <CommunityBadge /> : null}
           </div>
 
           <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -141,7 +142,7 @@ export default async function PetPage({ params }: PetPageProps) {
                 size={24}
               />
               <span>
-                Cared for by{" "}
+                {pet.is_community ? "Looked after by " : "Cared for by "}
                 <span className="font-medium text-foreground">
                   {pet.owner.display_name}
                 </span>

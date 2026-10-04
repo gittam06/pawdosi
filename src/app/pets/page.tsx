@@ -29,7 +29,7 @@ export default async function MyPetsPage() {
           <h1 className="font-heading text-2xl font-bold">My pets</h1>
           <p className="text-sm text-muted-foreground">
             {pets.length === 0
-              ? "Each pet gets its own profile and its own followers."
+              ? "Your own pets, or the street animals you look after — each gets a profile and its own followers."
               : `${pets.length} of ${MAX_PETS_PER_OWNER} profiles used.`}
           </p>
         </div>
@@ -47,13 +47,13 @@ export default async function MyPetsPage() {
       {pets.length === 0 ? (
         <EmptyState
           icon={PawPrint}
-          title="No pets yet"
-          description="Create a profile for your first pet. You can add photos, a bio and a birthday — and other people can follow along."
+          title="No profiles yet"
+          description="Add your own pet — or the street dog on your road who already has a name and four people feeding her. Both get a profile people can follow."
           action={
             <Button asChild className="mt-1 h-10">
               <Link href="/pets/new">
                 <Plus aria-hidden />
-                Add your first pet
+                Add an animal
               </Link>
             </Button>
           }

@@ -43,10 +43,10 @@ export default async function NewPetPage() {
 
       <Card className="rounded-2xl shadow-card">
         <CardHeader>
-          <CardTitle className="font-heading text-xl">Add a pet</CardTitle>
+          <CardTitle className="font-heading text-xl">Add an animal</CardTitle>
           <CardDescription>
-            Only the name and species are required. You can add a photo once the
-            profile exists.
+            Your own pet, or a street animal you look after. Only the name and
+            species are required — you can add a photo once the profile exists.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 
+import { cn } from "cn";
 import { createPetAction, updatePetAction } from "@/actions/pet";
 import { TextAreaField, TextField } from "@/components/forms/fields";
 import { FormAlert } from "@/components/forms/form-alert";
@@ -31,6 +32,9 @@ export function PetForm(props: PetFormProps) {
 
   // Controlled: React 19 resets the form once the action settles, which would
   // throw away everything typed when validation rejects one field.
+  const [isCommunity, setIsCommunity] = useState(
+    props.pet?.is_community ?? false,
+  );
   const [name, setName] = useState(props.pet?.name ?? "");
   const [species, setSpecies] = useState<string>(props.pet?.species ?? "");
   const [gender, setGender] = useState<string>(props.pet?.gender ?? "unknown");
@@ -44,14 +48,43 @@ export function PetForm(props: PetFormProps) {
         <input type="hidden" name="petId" value={props.pet.id} />
       ) : null}
 
+      <input
+        type="hidden"
+        name="isCommunity"
+        value={isCommunity ? "true" : ""}
+      />
+
       <FormAlert state={state} />
+
+      {/* Asked first: it changes who this profile belongs to, and the
+          wording of everything below it. */}
+      <fieldset className="space-y-1.5">
+        <legend className="mb-1.5 text-sm font-medium">
+          Whose animal is this?
+        </legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <RelationshipOption
+            active={!isCommunity}
+            title="My own pet"
+            description="Lives with me"
+            onSelect={() => setIsCommunity(false)}
+          />
+          <RelationshipOption
+            active={isCommunity}
+            title="A street animal"
+            description="One I look after, but do not own"
+            onSelect={() => setIsCommunity(true)}
+          />
+        </div>
+      </fieldset>
 
       <TextField
         name="name"
         label="Name"
         value={name}
         onChange={(event) => setName(event.target.value)}
-        placeholder="Bruno"
+        placeholder={isCommunity ? "Kaali, Blackie, Lucky…" : "Bruno"}
+        hint={isCommunity ? "Whatever the neighbourhood calls her." : undefined}
         required
         errors={fieldErrors?.name}
       />
@@ -121,5 +154,35 @@ export function PetForm(props: PetFormProps) {
         {isEdit ? "Save changes" : "Create profile"}
       </SubmitButton>
     </form>
+  );
+}
+
+function RelationshipOption({
+  active,
+  title,
+  description,
+  onSelect,
+}: {
+  active: boolean;
+  title: string;
+  description: string;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onSelect}
+      className={cn(
+        "rounded-xl border p-3 text-left transition-colors outline-none",
+        "focus-visible:ring-3 focus-visible:ring-ring/50",
+        active
+          ? "border-primary bg-primary-muted text-primary-muted-foreground"
+          : "border-border hover:bg-accent hover:text-accent-foreground",
+      )}
+    >
+      <span className="block font-heading text-sm font-bold">{title}</span>
+      <span className="block text-xs text-muted-foreground">{description}</span>
+    </button>
   );
 }

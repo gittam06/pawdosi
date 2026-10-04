@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { PetAvatar } from "@/components/pets/pet-avatar";
-import { SpeciesBadge } from "@/components/pets/species-badge";
+import { CommunityBadge, SpeciesBadge } from "@/components/pets/species-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatAge } from "@/lib/pet-age";
 import type { Pet } from "@/lib/types";
@@ -37,7 +37,10 @@ export function PetCard({ pet }: { pet: Pet }) {
           ) : null}
         </div>
 
-        <SpeciesBadge species={pet.species} />
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <SpeciesBadge species={pet.species} />
+          {pet.is_community ? <CommunityBadge /> : null}
+        </div>
       </CardContent>
     </Card>
   );

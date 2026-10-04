@@ -51,8 +51,15 @@ export const petBirthDateSchema = trimmed
     message: "That is too far back.",
   });
 
+/** A checkbox posts "on" when ticked and nothing at all when not. */
+export const isCommunitySchema = z
+  .union([z.literal("on"), z.literal("true"), z.literal("")])
+  .nullish()
+  .transform((value) => value === "on" || value === "true");
+
 export const petSchema = z.object({
   name: petNameSchema,
+  isCommunity: isCommunitySchema,
   species: petSpeciesSchema,
   gender: petGenderSchema,
   breed: optionalText(60, "At most 60 characters."),

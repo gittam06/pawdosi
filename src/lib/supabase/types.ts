@@ -266,6 +266,7 @@ export type Database = {
           created_at: string
           gender: Database["public"]["Enums"]["pet_gender"]
           id: string
+          is_community: boolean
           name: string
           owner_id: string
           slug: string
@@ -281,6 +282,7 @@ export type Database = {
           created_at?: string
           gender?: Database["public"]["Enums"]["pet_gender"]
           id?: string
+          is_community?: boolean
           name: string
           owner_id: string
           slug: string
@@ -296,6 +298,7 @@ export type Database = {
           created_at?: string
           gender?: Database["public"]["Enums"]["pet_gender"]
           id?: string
+          is_community?: boolean
           name?: string
           owner_id?: string
           slug?: string

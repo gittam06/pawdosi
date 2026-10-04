@@ -30,6 +30,7 @@ function writeFailed(error: PostgrestError, what: string): ActionState {
 function readPetForm(formData: FormData) {
   return {
     name: formData.get("name"),
+    isCommunity: formData.get("isCommunity"),
     species: formData.get("species"),
     gender: formData.get("gender"),
     breed: formData.get("breed"),
@@ -57,6 +58,7 @@ export async function createPetAction(
   const values = {
     owner_id: profile.id,
     name: parsed.data.name,
+    is_community: parsed.data.isCommunity,
     species: parsed.data.species,
     gender: parsed.data.gender,
     breed: parsed.data.breed ?? null,
@@ -108,6 +110,7 @@ export async function updatePetAction(
     .from("pets")
     .update({
       name: parsed.data.name,
+      is_community: parsed.data.isCommunity,
       species: parsed.data.species,
       gender: parsed.data.gender,
       breed: parsed.data.breed ?? null,
