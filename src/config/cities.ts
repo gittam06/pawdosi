@@ -1,0 +1,210 @@
+/**
+ * Indian cities offered as suggestions when someone types their city.
+ *
+ * This is a *suggestion* list, not a constraint: the field accepts anything a
+ * user types, because plenty of people live somewhere that will never be on a
+ * list of the hundred biggest cities. The state is shown alongside to tell
+ * apart the duplicated names (Hyderabad is in two states; so is Aurangabad).
+ *
+ * Only the city name is stored.
+ */
+
+export type City = { name: string; state: string };
+
+export const CITIES: readonly City[] = [
+  { name: "Mumbai", state: "Maharashtra" },
+  { name: "Delhi", state: "Delhi" },
+  { name: "New Delhi", state: "Delhi" },
+  { name: "Bengaluru", state: "Karnataka" },
+  { name: "Hyderabad", state: "Telangana" },
+  { name: "Ahmedabad", state: "Gujarat" },
+  { name: "Chennai", state: "Tamil Nadu" },
+  { name: "Kolkata", state: "West Bengal" },
+  { name: "Pune", state: "Maharashtra" },
+  { name: "Jaipur", state: "Rajasthan" },
+  { name: "Surat", state: "Gujarat" },
+  { name: "Lucknow", state: "Uttar Pradesh" },
+  { name: "Kanpur", state: "Uttar Pradesh" },
+  { name: "Nagpur", state: "Maharashtra" },
+  { name: "Indore", state: "Madhya Pradesh" },
+  { name: "Thane", state: "Maharashtra" },
+  { name: "Bhopal", state: "Madhya Pradesh" },
+  { name: "Visakhapatnam", state: "Andhra Pradesh" },
+  { name: "Patna", state: "Bihar" },
+  { name: "Vadodara", state: "Gujarat" },
+  { name: "Ghaziabad", state: "Uttar Pradesh" },
+  { name: "Ludhiana", state: "Punjab" },
+  { name: "Agra", state: "Uttar Pradesh" },
+  { name: "Nashik", state: "Maharashtra" },
+  { name: "Faridabad", state: "Haryana" },
+  { name: "Meerut", state: "Uttar Pradesh" },
+  { name: "Rajkot", state: "Gujarat" },
+  { name: "Varanasi", state: "Uttar Pradesh" },
+  { name: "Srinagar", state: "Jammu and Kashmir" },
+  { name: "Aurangabad", state: "Maharashtra" },
+  { name: "Dhanbad", state: "Jharkhand" },
+  { name: "Amritsar", state: "Punjab" },
+  { name: "Navi Mumbai", state: "Maharashtra" },
+  { name: "Allahabad", state: "Uttar Pradesh" },
+  { name: "Prayagraj", state: "Uttar Pradesh" },
+  { name: "Ranchi", state: "Jharkhand" },
+  { name: "Howrah", state: "West Bengal" },
+  { name: "Coimbatore", state: "Tamil Nadu" },
+  { name: "Jabalpur", state: "Madhya Pradesh" },
+  { name: "Gwalior", state: "Madhya Pradesh" },
+  { name: "Vijayawada", state: "Andhra Pradesh" },
+  { name: "Jodhpur", state: "Rajasthan" },
+  { name: "Madurai", state: "Tamil Nadu" },
+  { name: "Raipur", state: "Chhattisgarh" },
+  { name: "Kota", state: "Rajasthan" },
+  { name: "Chandigarh", state: "Chandigarh" },
+  { name: "Guwahati", state: "Assam" },
+  { name: "Solapur", state: "Maharashtra" },
+  { name: "Hubballi", state: "Karnataka" },
+  { name: "Mysuru", state: "Karnataka" },
+  { name: "Tiruchirappalli", state: "Tamil Nadu" },
+  { name: "Bareilly", state: "Uttar Pradesh" },
+  { name: "Aligarh", state: "Uttar Pradesh" },
+  { name: "Tiruppur", state: "Tamil Nadu" },
+  { name: "Moradabad", state: "Uttar Pradesh" },
+  { name: "Jalandhar", state: "Punjab" },
+  { name: "Bhubaneswar", state: "Odisha" },
+  { name: "Salem", state: "Tamil Nadu" },
+  { name: "Warangal", state: "Telangana" },
+  { name: "Guntur", state: "Andhra Pradesh" },
+  { name: "Bhiwandi", state: "Maharashtra" },
+  { name: "Saharanpur", state: "Uttar Pradesh" },
+  { name: "Gorakhpur", state: "Uttar Pradesh" },
+  { name: "Bikaner", state: "Rajasthan" },
+  { name: "Amravati", state: "Maharashtra" },
+  { name: "Noida", state: "Uttar Pradesh" },
+  { name: "Jamshedpur", state: "Jharkhand" },
+  { name: "Bhilai", state: "Chhattisgarh" },
+  { name: "Cuttack", state: "Odisha" },
+  { name: "Firozabad", state: "Uttar Pradesh" },
+  { name: "Kochi", state: "Kerala" },
+  { name: "Nellore", state: "Andhra Pradesh" },
+  { name: "Bhavnagar", state: "Gujarat" },
+  { name: "Dehradun", state: "Uttarakhand" },
+  { name: "Durgapur", state: "West Bengal" },
+  { name: "Asansol", state: "West Bengal" },
+  { name: "Rourkela", state: "Odisha" },
+  { name: "Nanded", state: "Maharashtra" },
+  { name: "Kolhapur", state: "Maharashtra" },
+  { name: "Ajmer", state: "Rajasthan" },
+  { name: "Akola", state: "Maharashtra" },
+  { name: "Gulbarga", state: "Karnataka" },
+  { name: "Jamnagar", state: "Gujarat" },
+  { name: "Ujjain", state: "Madhya Pradesh" },
+  { name: "Loni", state: "Uttar Pradesh" },
+  { name: "Siliguri", state: "West Bengal" },
+  { name: "Jhansi", state: "Uttar Pradesh" },
+  { name: "Ulhasnagar", state: "Maharashtra" },
+  { name: "Jammu", state: "Jammu and Kashmir" },
+  { name: "Sangli", state: "Maharashtra" },
+  { name: "Mangaluru", state: "Karnataka" },
+  { name: "Erode", state: "Tamil Nadu" },
+  { name: "Belagavi", state: "Karnataka" },
+  { name: "Ambattur", state: "Tamil Nadu" },
+  { name: "Tirunelveli", state: "Tamil Nadu" },
+  { name: "Malegaon", state: "Maharashtra" },
+  { name: "Gaya", state: "Bihar" },
+  { name: "Thiruvananthapuram", state: "Kerala" },
+  { name: "Udaipur", state: "Rajasthan" },
+  { name: "Kozhikode", state: "Kerala" },
+  { name: "Thrissur", state: "Kerala" },
+  { name: "Kollam", state: "Kerala" },
+  { name: "Alappuzha", state: "Kerala" },
+  { name: "Kannur", state: "Kerala" },
+  { name: "Gurugram", state: "Haryana" },
+  { name: "Panaji", state: "Goa" },
+  { name: "Margao", state: "Goa" },
+  { name: "Shimla", state: "Himachal Pradesh" },
+  { name: "Puducherry", state: "Puducherry" },
+  { name: "Tirupati", state: "Andhra Pradesh" },
+  { name: "Rajahmundry", state: "Andhra Pradesh" },
+  { name: "Kakinada", state: "Andhra Pradesh" },
+  { name: "Davanagere", state: "Karnataka" },
+  { name: "Shivamogga", state: "Karnataka" },
+  { name: "Tumakuru", state: "Karnataka" },
+  { name: "Udupi", state: "Karnataka" },
+  { name: "Vellore", state: "Tamil Nadu" },
+  { name: "Thoothukudi", state: "Tamil Nadu" },
+  { name: "Dindigul", state: "Tamil Nadu" },
+  { name: "Imphal", state: "Manipur" },
+  { name: "Shillong", state: "Meghalaya" },
+  { name: "Aizawl", state: "Mizoram" },
+  { name: "Itanagar", state: "Arunachal Pradesh" },
+  { name: "Kohima", state: "Nagaland" },
+  { name: "Agartala", state: "Tripura" },
+  { name: "Gangtok", state: "Sikkim" },
+  { name: "Dibrugarh", state: "Assam" },
+  { name: "Silchar", state: "Assam" },
+  { name: "Muzaffarpur", state: "Bihar" },
+  { name: "Bhagalpur", state: "Bihar" },
+  { name: "Darbhanga", state: "Bihar" },
+  { name: "Panipat", state: "Haryana" },
+  { name: "Ambala", state: "Haryana" },
+  { name: "Karnal", state: "Haryana" },
+  { name: "Hisar", state: "Haryana" },
+  { name: "Rohtak", state: "Haryana" },
+  { name: "Patiala", state: "Punjab" },
+  { name: "Bathinda", state: "Punjab" },
+  { name: "Mohali", state: "Punjab" },
+  { name: "Haridwar", state: "Uttarakhand" },
+  { name: "Rishikesh", state: "Uttarakhand" },
+  { name: "Haldwani", state: "Uttarakhand" },
+  { name: "Bilaspur", state: "Chhattisgarh" },
+  { name: "Korba", state: "Chhattisgarh" },
+  { name: "Sagar", state: "Madhya Pradesh" },
+  { name: "Satna", state: "Madhya Pradesh" },
+  { name: "Rewa", state: "Madhya Pradesh" },
+  { name: "Latur", state: "Maharashtra" },
+  { name: "Ahmednagar", state: "Maharashtra" },
+  { name: "Chandrapur", state: "Maharashtra" },
+  { name: "Jalgaon", state: "Maharashtra" },
+  { name: "Satara", state: "Maharashtra" },
+  { name: "Ratnagiri", state: "Maharashtra" },
+  { name: "Gandhinagar", state: "Gujarat" },
+  { name: "Anand", state: "Gujarat" },
+  { name: "Bharuch", state: "Gujarat" },
+  { name: "Junagadh", state: "Gujarat" },
+  { name: "Alwar", state: "Rajasthan" },
+  { name: "Bhilwara", state: "Rajasthan" },
+  { name: "Sikar", state: "Rajasthan" },
+  { name: "Siwan", state: "Bihar" },
+  { name: "Berhampur", state: "Odisha" },
+  { name: "Sambalpur", state: "Odisha" },
+  { name: "Puri", state: "Odisha" },
+  { name: "Kharagpur", state: "West Bengal" },
+  { name: "Darjeeling", state: "West Bengal" },
+  { name: "Nizamabad", state: "Telangana" },
+  { name: "Karimnagar", state: "Telangana" },
+  { name: "Khammam", state: "Telangana" },
+];
+
+const MAX_SUGGESTIONS = 8;
+
+/**
+ * Matches on a prefix first, then anywhere in the name, then on the state —
+ * so typing "new" surfaces New Delhi before Nellore, and "kerala" still finds
+ * Kochi. Exact-prefix matches are what people expect at the top.
+ */
+export function suggestCities(query: string): City[] {
+  const term = query.trim().toLowerCase();
+  if (term.length === 0) return CITIES.slice(0, MAX_SUGGESTIONS);
+
+  const prefix: City[] = [];
+  const contains: City[] = [];
+  const byState: City[] = [];
+
+  for (const city of CITIES) {
+    const name = city.name.toLowerCase();
+
+    if (name.startsWith(term)) prefix.push(city);
+    else if (name.includes(term)) contains.push(city);
+    else if (city.state.toLowerCase().includes(term)) byState.push(city);
+  }
+
+  return [...prefix, ...contains, ...byState].slice(0, MAX_SUGGESTIONS);
+}

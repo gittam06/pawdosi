@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { createReportAction } from "@/actions/report";
 import { CloudinaryImage } from "@/components/cloudinary-image";
+import { CityField } from "@/components/forms/city-field";
 import { TextAreaField, TextField } from "@/components/forms/fields";
 import { FormAlert } from "@/components/forms/form-alert";
 import { SelectField } from "@/components/forms/select-field";
@@ -272,12 +273,9 @@ export function ReportForm({ pets }: { pets: Pet[] }) {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField
-          name="city"
-          label="City"
+        <CityField
           value={city}
-          onChange={(event) => setCity(event.target.value)}
-          placeholder="Bengaluru"
+          onChange={setCity}
           required
           errors={fieldErrors?.city}
         />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
+import { ImageCropper } from "@/components/upload/image-cropper";
 import { Button } from "@/components/ui/button";
 import { idleState, type ActionState } from "@/lib/action-state";
 
@@ -36,6 +37,13 @@ type ImageUploaderProps = {
   onRemove: UploadAction;
   uploadLabel?: string;
   replaceLabel?: string;
+  /**
+   * Offer a square crop before uploading. On by default: every consumer of
+   * this component displays its image as a circle, so letting someone upload
+   * a photo whose subject is off-centre guarantees a bad avatar.
+   */
+  crop?: boolean;
+  cropTitle?: string;
 };
 
 /**
@@ -55,11 +63,15 @@ export function ImageUploader({
   onRemove,
   uploadLabel = "Upload photo",
   replaceLabel = "Change photo",
+  crop = true,
+  cropTitle,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
+  // Held between picking a file and confirming the crop.
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const busy = isPending || isUploading;
 
@@ -83,7 +95,12 @@ export function ImageUploader({
     return true;
   }
 
-  async function handleFile(file: File) {
+  /**
+   * Validates the pick, then either opens the cropper or uploads straight
+   * away. Validation happens here rather than after cropping because a 40 MB
+   * file should be rejected before it is decoded into memory.
+   */
+  function handlePick(file: File) {
     if (!ACCEPTED.includes(file.type)) {
       toast.error("Pick a JPEG, PNG, WebP or AVIF image.");
       return;
@@ -94,6 +111,11 @@ export function ImageUploader({
       return;
     }
 
+    if (crop) setPendingFile(file);
+    else void upload(file);
+  }
+
+  async function upload(file: File) {
     setIsUploading(true);
 
     try {
@@ -214,9 +236,26 @@ export function ImageUploader({
         aria-label="Choose an image"
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) void handleFile(file);
+          if (file) handlePick(file);
+          // Reset immediately so picking the same file twice still fires.
+          event.target.value = "";
         }}
       />
+
+      {crop && pendingFile ? (
+        /* Keyed by the pick, so a second attempt starts from a clean crop
+           rather than inheriting the last one's zoom and position. */
+        <ImageCropper
+          key={`${pendingFile.name}-${pendingFile.lastModified}`}
+          file={pendingFile}
+          title={cropTitle}
+          onCancel={() => setPendingFile(null)}
+          onCropped={(cropped) => {
+            setPendingFile(null);
+            void upload(cropped);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

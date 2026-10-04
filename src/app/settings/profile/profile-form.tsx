@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { updateProfileAction } from "@/actions/profile";
+import { CityField } from "@/components/forms/city-field";
 import { TextAreaField, TextField } from "@/components/forms/fields";
 import { FormAlert } from "@/components/forms/form-alert";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -47,12 +48,9 @@ export function ProfileForm({ profile }: { profile: OnboardedProfile }) {
         errors={fieldErrors?.displayName}
       />
 
-      <TextField
-        name="city"
-        label="City"
+      <CityField
         value={city}
-        onChange={(event) => setCity(event.target.value)}
-        autoComplete="address-level2"
+        onChange={setCity}
         required
         errors={fieldErrors?.city}
       />

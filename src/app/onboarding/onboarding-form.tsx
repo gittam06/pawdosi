@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { completeOnboardingAction } from "@/actions/profile";
+import { CityField } from "@/components/forms/city-field";
 import { TextField } from "@/components/forms/fields";
 import { FormAlert } from "@/components/forms/form-alert";
 import { SubmitButton } from "@/components/forms/submit-button";
@@ -58,14 +59,10 @@ export function OnboardingForm({
         errors={fieldErrors?.displayName}
       />
 
-      <TextField
-        name="city"
-        label="City"
+      <CityField
         value={city}
-        onChange={(event) => setCity(event.target.value)}
-        placeholder="Bengaluru"
+        onChange={setCity}
         hint="Used to show you nearby Lost & Found reports."
-        autoComplete="address-level2"
         required
         errors={fieldErrors?.city}
       />
