@@ -29,7 +29,7 @@ export async function generateMetadata({
 
   if (!post) return { title: "Post not found" };
 
-  const title = `${post.pet.name} on PawPals`;
+  const title = `${post.pet.name} on Pawdosi`;
   const description = post.caption ?? `A moment shared by ${post.pet.name}.`;
   const [first] = post.images;
 

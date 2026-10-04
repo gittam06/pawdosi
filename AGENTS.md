@@ -8,7 +8,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# PawPals — working rules
+# Pawdosi — working rules
 
 A web-based social community where **the pet is the profile**. Owners create
 profiles for their pets, post photos, follow other pets, like and comment. The

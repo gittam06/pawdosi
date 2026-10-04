@@ -120,7 +120,7 @@ const LOST_FOUND_POINTS = [
 
 const FAQS = [
   {
-    question: "Do I need to own a pet to use PawPals?",
+    question: "Do I need to own a pet to use Pawdosi?",
     answer:
       "No. Plenty of people here look after animals they do not own — the dog outside the shop, the cats behind the building. Those profiles are marked as street animals, and the person who added them is listed as the caretaker rather than the owner.",
   },
@@ -187,7 +187,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="max-w-xl text-base text-pretty text-muted-foreground sm:text-lg">
-            PawPals is a community where the pet is the profile — your dog, your
+            Pawdosi is a community where the pet is the profile — your dog, your
             cat, or the one who lives outside the chai shop. Share their days,
             follow the ones you like, and help find them when they go missing.
           </p>

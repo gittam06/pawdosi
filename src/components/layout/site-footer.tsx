@@ -10,7 +10,8 @@ export function SiteFooter() {
           <span className="font-heading font-bold text-foreground">
             {siteConfig.name}
           </span>{" "}
-          — built for pets and their people.
+          — paw + <em className="not-italic">padosi</em>, because every animal
+          on your street is somebody&apos;s neighbour.
         </p>
         <nav aria-label="Footer">
           <ul className="flex items-center gap-4">

@@ -8,7 +8,7 @@ import { searchPets } from "@/lib/search";
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Find pets on PawPals by name or breed.",
+  description: "Find pets on Pawdosi by name or breed.",
 };
 
 export const dynamic = "force-dynamic";

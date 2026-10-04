@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ---------------------------------------------------------------------------
-   PawPals design tokens.
+   Pawdosi design tokens.
    Values live in :root / .dark below; this block only registers them with
    Tailwind so utilities (bg-alert, shadow-card, font-heading, ...) exist.
    `inline` keeps the var() references unresolved so .dark overrides apply.

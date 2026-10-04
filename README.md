@@ -1,18 +1,22 @@
-# 🐾 PawPals
+# 🐾 Pawdosi
 
-**The social home for pets and their people.**
+**Every animal on your street is somebody's neighbour.**
 
-PawPals is a social community where the **pet is the profile**. Owners create a
-profile for each of their pets, share photos and moments, follow other pets, and
-like and comment. Its signature feature is something the big photo apps do not
-have: a neighbourhood **Lost & Found** board for reuniting lost pets with their
-families.
+_Pawdosi_ — paw + **padosi** (पड़ोसी), Hindi for neighbour.
+
+Pawdosi is a social community where the **animal is the profile**. Give your pet
+a profile of its own — or the street dog outside the shop who already has a name
+and four people feeding her. Post as them, follow the ones you like, and help
+find them when they go missing. That last part is the signature feature the big
+photo apps have no answer for: a neighbourhood **Lost & Found** board, readable
+without an account, because the person who recognises the dog probably does not
+have one.
 
 > Status: **live**. All six build phases are done and the app is deployed.
 > See [Roadmap](#roadmap).
 
-🔗 **Live:** <https://pawpals-swart.vercel.app> ·
-**Source:** <https://github.com/gittam06/pawpals>
+🔗 **Live:** <https://pawdosi-swart.vercel.app> ·
+**Source:** <https://github.com/gittam06/pawdosi>
 
 ---
 
@@ -230,8 +234,8 @@ npm run seed:reset      # wipes previously seeded accounts, then seeds
 npm run seed:clean      # wipes them and stops — for a clean public launch
 ```
 
-Seeded owners sign in with `<username>@pawpals-demo.local` and the password
-printed by the script — for example `aarav_s@pawpals-demo.local`. `--reset`
+Seeded owners sign in with `<username>@pawdosi-demo.local` and the password
+printed by the script — for example `aarav_s@pawdosi-demo.local`. `--reset`
 only ever touches accounts on that domain, and deletes their Cloudinary assets
 along with them.
 
@@ -308,7 +312,7 @@ The app is deployment-ready; these are the steps, in order.
 **1. Push to GitHub**
 
 ```bash
-git remote add origin https://github.com/<you>/pawpals.git
+git remote add origin https://github.com/<you>/pawdosi.git
 git push -u origin main
 ```
 

@@ -8,7 +8,7 @@ import { features } from "@/config/features";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to PawPals.",
+  description: "Sign in to Pawdosi.",
 };
 
 export default async function SignInPage({

@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   const description =
     pet.bio ??
-    `${pet.name} is a ${pet.breed ? `${pet.breed} ` : ""}${pet.species} on PawPals.`;
+    `${pet.name} is a ${pet.breed ? `${pet.breed} ` : ""}${pet.species} on Pawdosi.`;
 
   // A square Cloudinary crop doubles as the Open Graph image.
   const image = avatarUrl(pet.avatar_url, 1200);
@@ -39,7 +39,7 @@ export async function generateMetadata({
     title: pet.name,
     description,
     openGraph: {
-      title: `${pet.name} on PawPals`,
+      title: `${pet.name} on Pawdosi`,
       description,
       type: "profile",
       images: image ? [{ url: image, width: 1200, height: 1200 }] : undefined,

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Confirm your email",
-  description: "Check your inbox to finish creating your PawPals account.",
+  description: "Check your inbox to finish creating your Pawdosi account.",
 };
 
 export default function CheckEmailPage() {

@@ -10,7 +10,7 @@ import { deflateSync } from "node:zlib";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 
-export const E2E_PASSWORD = "PawPals!E2E-2026";
+export const E2E_PASSWORD = "Pawdosi!E2E-2026";
 
 export function requireE2EEnv(): void {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
@@ -31,7 +31,7 @@ function adminHeaders(): HeadersInit {
 /** A unique address per run, so reruns never collide on the unique index. */
 export function uniqueEmail(): string {
   const stamp = `${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
-  return `pawpals.e2e.${stamp}@example.com`;
+  return `pawdosi.e2e.${stamp}@example.com`;
 }
 
 /**

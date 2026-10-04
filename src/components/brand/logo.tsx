@@ -31,7 +31,8 @@ export function Logo({ markOnly = false, className }: LogoProps) {
           className="font-heading text-lg font-extrabold tracking-tight"
           aria-hidden
         >
-          Paw<span className="text-primary">Pals</span>
+          {/* The split is the pun: paw + padosi, Hindi for neighbour. */}
+          Paw<span className="text-primary">dosi</span>
         </span>
       )}
     </Link>

@@ -40,7 +40,7 @@ export async function CommunityStrip() {
               id="community-heading"
               className="font-heading text-sm font-bold tracking-wide text-muted-foreground uppercase"
             >
-              On PawPals right now
+              On Pawdosi right now
             </h2>
 
             <dl className="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-2">

@@ -10,7 +10,7 @@ import { listExplorePosts } from "@/lib/posts";
 
 export const metadata: Metadata = {
   title: "Explore",
-  description: "Recent moments from pets across PawPals.",
+  description: "Recent moments from pets across Pawdosi.",
 };
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function ExplorePage() {
       <header className="mb-6 space-y-1">
         <h1 className="font-heading text-2xl font-bold">Explore</h1>
         <p className="text-sm text-muted-foreground">
-          The newest moments from every pet on PawPals.
+          The newest moments from every pet on Pawdosi.
         </p>
       </header>
 
@@ -34,7 +34,7 @@ export default async function ExplorePage() {
         <EmptyState
           icon={Compass}
           title="Nothing posted yet"
-          description="PawPals is brand new. Be the first to share a moment."
+          description="Pawdosi is brand new. Be the first to share a moment."
           action={
             user ? (
               <Button asChild className="mt-1 h-10">
@@ -45,7 +45,7 @@ export default async function ExplorePage() {
               </Button>
             ) : (
               <Button asChild className="mt-1 h-10">
-                <Link href="/sign-up">Join PawPals</Link>
+                <Link href="/sign-up">Join Pawdosi</Link>
               </Button>
             )
           }

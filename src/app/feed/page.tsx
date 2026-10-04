@@ -52,7 +52,7 @@ export default async function FeedPage() {
           description={
             petIds.length === 0
               ? "Find pets on Explore and follow the ones you want in your feed."
-              : "The pets you follow have not posted anything yet. Explore has the rest of PawPals."
+              : "The pets you follow have not posted anything yet. Explore has the rest of Pawdosi."
           }
           action={
             <Button variant="outline" asChild className="mt-1 h-10">

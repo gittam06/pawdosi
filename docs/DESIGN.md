@@ -1,6 +1,6 @@
-# PawPals — Design system
+# Pawdosi — Design system
 
-The single reference for how PawPals looks. Every token lives in
+The single reference for how Pawdosi looks. Every token lives in
 `src/app/globals.css`; this document explains **why** each value is what it is.
 If a screen needs a colour, a radius or a shadow that is not listed here, add it
 as a token first, then use it.

@@ -9,10 +9,10 @@ import { cloudinaryEnv } from "@/lib/env";
 
 /** Every asset we create lives under one of these prefixes. */
 export const CLOUDINARY_FOLDERS = {
-  avatar: "pawpals/avatars",
-  pet: "pawpals/pets",
-  post: "pawpals/posts",
-  report: "pawpals/reports",
+  avatar: "pawdosi/avatars",
+  pet: "pawdosi/pets",
+  post: "pawdosi/posts",
+  report: "pawdosi/reports",
 } as const;
 
 export type CloudinaryFolderKey = keyof typeof CLOUDINARY_FOLDERS;

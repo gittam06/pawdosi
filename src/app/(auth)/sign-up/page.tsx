@@ -8,14 +8,14 @@ import { features } from "@/config/features";
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Join PawPals and give your pet a profile of its own.",
+  description: "Join Pawdosi and give your pet a profile of its own.",
 };
 
 export default function SignUpPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1.5 text-center">
-        <h1 className="font-heading text-2xl font-bold">Join PawPals</h1>
+        <h1 className="font-heading text-2xl font-bold">Join Pawdosi</h1>
         <p className="text-sm text-muted-foreground">
           One account, a profile for every pet you have.
         </p>

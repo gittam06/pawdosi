@@ -19,7 +19,11 @@ const RESERVED_USERNAMES = new Set([
   "me",
   "new",
   "onboarding",
+  "pawdosi",
+  // The former name. Still reserved so nobody can impersonate the project
+  // under it, and so old links reading like a username stay unclaimable.
   "pawpals",
+  "padosi",
   "pets",
   "profile",
   "root",

@@ -40,8 +40,8 @@ if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
 }
 
 /** Every seeded account uses this domain, which is how --reset finds them. */
-const SEED_DOMAIN = "pawpals-demo.local";
-const SEED_PASSWORD = "PawPals!Demo-2026";
+const SEED_DOMAIN = "pawdosi-demo.local";
+const SEED_PASSWORD = "Pawdosi!Demo-2026";
 
 /**
  * Source images. Lorem Picsum is deterministic per seed and licence-free.
@@ -342,7 +342,7 @@ async function upload(
   size = 900,
 ): Promise<{ url: string; publicId: string; width: number; height: number }> {
   const result = await cloudinary.uploader.upload(sourceImage(seed, size), {
-    folder: `pawpals/${folder}`,
+    folder: `pawdosi/${folder}`,
   });
 
   return {
