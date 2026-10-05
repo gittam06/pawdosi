@@ -89,7 +89,8 @@ export function ReportForm({ pets }: { pets: Pet[] }) {
       body.append("file", file);
       body.append("api_key", sign.apiKey);
       body.append("timestamp", String(sign.timestamp));
-      body.append("folder", sign.folder);
+      // The signature covers this id, so it cannot be altered here.
+      body.append("public_id", sign.publicId);
       body.append("signature", sign.signature);
 
       const uploadResponse = await fetch(
