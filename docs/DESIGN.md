@@ -278,6 +278,29 @@ Every data view ships four states:
    retry affordance.
 4. **Loaded**.
 
+### Dates and times
+
+Timestamps render on the **server**, so there is no viewer timezone to read.
+Two consequences, both deliberate:
+
+- **Absolute times are shown in `Asia/Kolkata`, with the zone named** —
+  "6 October 2026 at 3:39 am IST". `toLocaleString` without an explicit
+  `timeZone` uses the server's zone, which is UTC on Vercel; a sighting entered
+  at 3:39 am came out as "10:09 pm" the day before. The audience is one
+  country, so the zone is pinned rather than guessed, and printed so the
+  reading is never ambiguous. Revisit if Pawdosi leaves IST.
+- **A time the _user_ enters is resolved in the browser, never on the server.**
+  `datetime-local` carries no offset, so only the browser knows what wall clock
+  the person meant. Lost & Found posts an absolute ISO instant alongside the
+  visible field, and the schema requires the offset — a naked local string is a
+  validation error rather than a silent five-hour one. Any default drawn from
+  the clock is filled in after hydration (`useHydrated`), because a `useState`
+  initialiser runs on the server.
+
+Relative times ("3 hours ago") are correct at request time and then frozen —
+acceptable for a feed, and it avoids a hydration mismatch between two clocks.
+Pair every one with an absolute `title`/`dateTime`.
+
 ---
 
 ## 7. Accessibility checklist

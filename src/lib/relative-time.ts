@@ -35,6 +35,17 @@ export function relativeTime(timestamp: string): string {
   return "";
 }
 
+/**
+ * The zone these timestamps are rendered in.
+ *
+ * `toLocaleString` with no `timeZone` uses the *server's* zone, which is UTC on
+ * Vercel — so "last seen at 6pm" came out as 12:30pm for every reader. Since
+ * this renders on the server there is no viewer zone to use, and the audience
+ * is one country, so it is pinned rather than guessed. The offset is shown so
+ * the reading is never ambiguous. Revisit when Pawdosi leaves IST.
+ */
+const DISPLAY_TIME_ZONE = "Asia/Kolkata";
+
 export function absoluteTime(timestamp: string): string {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
@@ -45,5 +56,7 @@ export function absoluteTime(timestamp: string): string {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: DISPLAY_TIME_ZONE,
+    timeZoneName: "short",
   });
 }
