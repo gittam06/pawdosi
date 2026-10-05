@@ -22,9 +22,17 @@ const PROTECTED_PREFIXES = [
 
 /**
  * Exact paths only. `/pets` and `/pets/new` are private, but `/pets/<slug>`
- * is a public profile — a prefix rule here would hide the whole feature.
+ * is a public profile — a prefix rule here would hide the whole feature. Same
+ * for `/posts/new` against `/posts/<id>`, and `/lost-found/new` against the
+ * public board.
+ *
+ * The two composer routes guard themselves with `requireOnboardedProfile()`,
+ * but leaving them out of this list was still wrong twice over: the page
+ * streams as a `200` before that redirect reaches the client, and the redirect
+ * it issues has no `?next=`, so signing in dropped the visitor on the home
+ * page instead of the form they came for.
  */
-const PROTECTED_EXACT = ["/pets", "/pets/new"];
+const PROTECTED_EXACT = ["/pets", "/pets/new", "/posts/new", "/lost-found/new"];
 
 function isProtected(pathname: string): boolean {
   if (PROTECTED_EXACT.includes(pathname)) return true;
