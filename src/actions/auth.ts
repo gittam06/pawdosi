@@ -12,12 +12,30 @@ import { signInSchema, signUpSchema } from "@/lib/validations/auth";
 /**
  * Only same-origin, absolute-path redirects are honoured, so `?next=` cannot
  * be used to bounce a freshly signed-in user to another site.
+ *
+ * Resolved against a throwaway origin rather than pattern-matched: anything
+ * that lands on a different host is not a local path, however it was spelled.
+ * The character-by-character version of this check (`startsWith("//")`) missed
+ * `/\evil.com` — every browser treats a backslash as a slash in the authority
+ * position, so `?next=/\evil.com` sent a user who had just typed their
+ * password straight to another site.
  */
-function safeNext(value: FormDataEntryValue | null, fallback: string): string {
-  if (typeof value !== "string") return fallback;
-  if (!value.startsWith("/") || value.startsWith("//")) return fallback;
+const LOCAL_BASE = "http://redirect.invalid";
 
-  return value;
+function safeNext(value: FormDataEntryValue | null, fallback: string): string {
+  if (typeof value !== "string" || !value.startsWith("/")) return fallback;
+
+  let resolved: URL;
+
+  try {
+    resolved = new URL(value, LOCAL_BASE);
+  } catch {
+    return fallback;
+  }
+
+  if (resolved.origin !== LOCAL_BASE) return fallback;
+
+  return `${resolved.pathname}${resolved.search}${resolved.hash}`;
 }
 
 /**

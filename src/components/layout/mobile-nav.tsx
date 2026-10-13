@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "cn";
-import { mainNav } from "@/config/site";
+import { mobileNav } from "@/config/site";
 
 /**
  * Bottom tab bar for phones. Sits above the home-bar inset on iOS via
  * `pb-[env(safe-area-inset-bottom)]`, and is hidden from `md` upwards.
+ *
+ * Driven by `mobileNav`, not `mainNav`: the header's search box is hidden at
+ * this size, so search only exists down here.
  */
 export function MobileNav() {
   const pathname = usePathname();
@@ -19,7 +22,7 @@ export function MobileNav() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
     >
       <ul className="flex items-stretch">
-        {mainNav.map(({ href, shortLabel, icon: Icon }) => {
+        {mobileNav.map(({ href, shortLabel, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
           return (

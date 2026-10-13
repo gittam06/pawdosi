@@ -11,7 +11,11 @@ import {
   type ActionState,
 } from "@/lib/action-state";
 import { getCurrentProfile, requireUser } from "@/lib/auth";
-import { deleteAsset, verifyUploadedImage } from "@/lib/cloudinary";
+import {
+  deleteAsset,
+  deleteOwnedAsset,
+  verifyUploadedImage,
+} from "@/lib/cloudinary";
 import { createClient } from "@/lib/supabase/server";
 import {
   avatarUploadSchema,
@@ -124,11 +128,16 @@ export async function updateAvatarAction(
   if (!parsed.success) return failure("That upload could not be read.");
 
   // The browser uploaded straight to Cloudinary, so ask Cloudinary what
-  // actually arrived rather than believing the client.
-  const asset = await verifyUploadedImage(parsed.data.publicId, "avatar");
+  // actually arrived rather than believing the client — and check the id is
+  // under this user's own prefix before touching it.
+  const asset = await verifyUploadedImage(
+    parsed.data.publicId,
+    "avatar",
+    user.id,
+  );
 
   if (!asset.ok) {
-    await deleteAsset(parsed.data.publicId);
+    await deleteOwnedAsset(parsed.data.publicId, "avatar", user.id);
     return failure(asset.reason);
   }
 
@@ -145,7 +154,7 @@ export async function updateAvatarAction(
 
   if (error) {
     // Do not orphan the asset we just accepted but could not record.
-    await deleteAsset(parsed.data.publicId);
+    await deleteOwnedAsset(parsed.data.publicId, "avatar", user.id);
     return writeFailed(error, "save avatar");
   }
 

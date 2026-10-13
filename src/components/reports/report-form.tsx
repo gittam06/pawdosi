@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { SPECIES } from "@/config/pets";
 import { idleState } from "@/lib/action-state";
+import { useHydrated } from "@/lib/use-hydrated";
 import type { Pet, ReportType } from "@/lib/types";
 import {
   CONTACT_NOTE_LIMIT,
@@ -38,6 +39,19 @@ function localDateTimeValue(date: Date): string {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
+/**
+ * Turns the input's local "YYYY-MM-DDTHH:mm" into an absolute instant.
+ *
+ * This has to happen here, in the browser: a `datetime-local` value carries no
+ * offset, and the server has no way to know which zone the reporter meant —
+ * it would read 6pm in Bengaluru as 6pm UTC. `new Date(local)` resolves the
+ * string in *this* browser's zone, which is the right one by definition.
+ */
+function toInstant(local: string): string {
+  const ms = Date.parse(local);
+  return Number.isNaN(ms) ? "" : new Date(ms).toISOString();
+}
+
 export function ReportForm({ pets }: { pets: Pet[] }) {
   const [state, formAction] = useActionState(createReportAction, idleState);
   const fieldErrors = state.status === "error" ? state.fieldErrors : undefined;
@@ -54,9 +68,27 @@ export function ReportForm({ pets }: { pets: Pet[] }) {
   const [city, setCity] = useState("");
   const [locality, setLocality] = useState("");
   const [contactNote, setContactNote] = useState("");
-  const [lastSeenAt, setLastSeenAt] = useState(() =>
-    localDateTimeValue(new Date()),
-  );
+
+  /**
+   * "Last seen" defaults to now — in the *reporter's* zone, which only the
+   * browser knows. A `useState` initialiser cannot do it: it runs during the
+   * server render and is not re-run on the client, so the field showed the
+   * server's wall clock (UTC on Vercel) and an Indian reporter was offered a
+   * default five and a half hours earlier than the moment they were filing.
+   *
+   * `null` means "not filled in yet" and is deliberately distinct from `""`,
+   * which means the reporter cleared the field and should be left alone.
+   */
+  const hydrated = useHydrated();
+  const [lastSeenAt, setLastSeenAt] = useState<string | null>(null);
+
+  // Adjusted during render rather than in an effect, which
+  // `react-hooks/set-state-in-effect` rejects.
+  if (hydrated && lastSeenAt === null) {
+    setLastSeenAt(localDateTimeValue(new Date()));
+  }
+
+  const lastSeenValue = lastSeenAt ?? "";
 
   async function handleFile(file: File) {
     if (!ACCEPTED.includes(file.type)) {
@@ -89,7 +121,8 @@ export function ReportForm({ pets }: { pets: Pet[] }) {
       body.append("file", file);
       body.append("api_key", sign.apiKey);
       body.append("timestamp", String(sign.timestamp));
-      body.append("folder", sign.folder);
+      // The signature covers this id, so it cannot be altered here.
+      body.append("public_id", sign.publicId);
       body.append("signature", sign.signature);
 
       const uploadResponse = await fetch(
@@ -292,13 +325,19 @@ export function ReportForm({ pets }: { pets: Pet[] }) {
         />
       </div>
 
+      {/* The visible field shows local time; the hidden one carries the
+          absolute instant the server stores. Its errors surface on the field
+          the reporter can actually see. */}
+      <input type="hidden" name="lastSeenAt" value={toInstant(lastSeenValue)} />
+
       <TextField
-        name="lastSeenAt"
+        name="lastSeenAtLocal"
         label={isLost ? "Last seen" : "Found at"}
         type="datetime-local"
-        value={lastSeenAt}
+        value={lastSeenValue}
         onChange={(event) => setLastSeenAt(event.target.value)}
-        max={localDateTimeValue(new Date())}
+        // Also the browser's clock, so also client-only.
+        max={hydrated ? localDateTimeValue(new Date()) : undefined}
         required
         errors={fieldErrors?.lastSeenAt}
       />

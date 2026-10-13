@@ -14,16 +14,39 @@ export const reportTypeSchema = z.enum(["lost", "found"], {
 export const reportStatusSchema = z.enum(["open", "reunited"]);
 
 /**
- * `datetime-local` posts "YYYY-MM-DDTHH:mm" with no timezone, which the
- * browser means in *local* time. It is converted on the server with the same
- * assumption, so a 6pm sighting is stored as 6pm where the reporter is.
+ * ISO-8601 with an explicit offset: "2026-10-06T00:36:00+05:30" or a `Z`.
+ *
+ * `datetime-local` posts "YYYY-MM-DDTHH:mm" with no timezone at all, which
+ * `Date.parse` then resolves in whatever zone the *server* runs in — UTC on
+ * Vercel, not the reporter's. A reporter in India filling in their own local
+ * time would have it read as UTC: five and a half hours in the future, so the
+ * "cannot be in the future" check below rejected the form's own default value,
+ * and anything that did get through was stored 5h30m off.
+ *
+ * So the offset is not optional here. The browser resolves the instant (it is
+ * the only party that knows its own zone) and posts that; the visible input
+ * keeps showing local time. Requiring the offset means a naked local string is
+ * now a validation failure rather than a silent five-hour error.
  */
+const ISO_INSTANT =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+
+/** Older than this is a typo, not a sighting. */
+const EARLIEST_LAST_SEEN = Date.UTC(2000, 0, 1);
+
 export const lastSeenAtSchema = trimmed
   .min(1, "When was it last seen?")
-  .refine((value) => !Number.isNaN(Date.parse(value)), "That is not a date.")
+  .refine(
+    (value) => ISO_INSTANT.test(value) && !Number.isNaN(Date.parse(value)),
+    "That is not a date.",
+  )
   .refine(
     (value) => Date.parse(value) <= Date.now() + 60_000,
     "That cannot be in the future.",
+  )
+  .refine(
+    (value) => Date.parse(value) >= EARLIEST_LAST_SEEN,
+    "That date is too far in the past.",
   );
 
 export const reportSchema = z.object({

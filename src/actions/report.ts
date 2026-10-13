@@ -10,7 +10,11 @@ import {
   type ActionState,
 } from "@/lib/action-state";
 import { requireOnboardedProfile } from "@/lib/auth";
-import { deleteAsset, verifyUploadedImage } from "@/lib/cloudinary";
+import {
+  deleteAsset,
+  deleteOwnedAsset,
+  verifyUploadedImage,
+} from "@/lib/cloudinary";
 import {
   listReports,
   reportCursorSchema,
@@ -59,10 +63,11 @@ export async function createReportAction(
     const asset = await verifyUploadedImage(
       parsed.data.image.publicId,
       "report",
+      profile.id,
     );
 
     if (!asset.ok) {
-      await deleteAsset(parsed.data.image.publicId);
+      await deleteOwnedAsset(parsed.data.image.publicId, "report", profile.id);
       return failure(asset.reason);
     }
 
@@ -93,7 +98,11 @@ export async function createReportAction(
     .single();
 
   if (error || !data) {
-    if (parsed.data.image) await deleteAsset(parsed.data.image.publicId);
+    await deleteOwnedAsset(
+      parsed.data.image?.publicId ?? null,
+      "report",
+      profile.id,
+    );
     console.error("Failed to create report", error);
     return failure("We could not publish that report. Please try again.");
   }

@@ -5,7 +5,11 @@ import { revalidatePath } from "next/cache";
 
 import { failure, invalidInput, type ActionState } from "@/lib/action-state";
 import { requireOnboardedProfile } from "@/lib/auth";
-import { deleteAsset, verifyUploadedImage } from "@/lib/cloudinary";
+import {
+  deleteAsset,
+  deleteOwnedAsset,
+  verifyUploadedImage,
+} from "@/lib/cloudinary";
 import { createClient } from "@/lib/supabase/server";
 import { parseImagesField, postSchema } from "@/lib/validations/post";
 
@@ -30,15 +34,30 @@ export async function createPostAction(
   // its own upload is not evidence.
   const verified = await Promise.all(
     parsed.data.images.map((image) =>
-      verifyUploadedImage(image.publicId, "post"),
+      verifyUploadedImage(image.publicId, "post", profile.id),
     ),
   );
 
   const allPublicIds = parsed.data.images.map((image) => image.publicId);
+
+  /**
+   * Rolls back the uploads for a post that did not happen.
+   *
+   * Guarded, because these ids came from the form: if one of them is a forged
+   * id pointing at somebody else's asset, the rollback must not be the thing
+   * that deletes it.
+   */
+  const discardUploads = () =>
+    Promise.all(
+      allPublicIds.map((publicId) =>
+        deleteOwnedAsset(publicId, "post", profile.id),
+      ),
+    );
+
   const rejected = verified.find((asset) => !asset.ok);
 
   if (rejected && !rejected.ok) {
-    await Promise.all(allPublicIds.map(deleteAsset));
+    await discardUploads();
     return failure(rejected.reason);
   }
 
@@ -57,7 +76,7 @@ export async function createPostAction(
     .single();
 
   if (postError || !post) {
-    await Promise.all(allPublicIds.map(deleteAsset));
+    await discardUploads();
     console.error("Failed to create post", postError);
     return failure("We could not publish that post. Please try again.");
   }
@@ -80,7 +99,7 @@ export async function createPostAction(
   if (imagesError) {
     // A post with no images is not a post. Undo the whole thing.
     await supabase.from("posts").delete().eq("id", post.id);
-    await Promise.all(allPublicIds.map(deleteAsset));
+    await discardUploads();
     console.error("Failed to attach post images", imagesError);
     return failure("We could not publish that post. Please try again.");
   }

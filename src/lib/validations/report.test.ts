@@ -11,7 +11,9 @@ const VALID = {
   description: "Grey tabby with a red collar, very shy.",
   city: "Bengaluru",
   locality: "Indiranagar",
-  lastSeenAt: "2026-06-14T18:30",
+  // An absolute instant, offset and all. See the `lastSeenAt` tests below for
+  // why a naked "2026-06-14T18:30" is not accepted.
+  lastSeenAt: "2026-06-14T18:30:00+05:30",
 };
 
 beforeEach(() => {
@@ -51,7 +53,7 @@ describe("reportSchema", () => {
   it("rejects a sighting in the future", () => {
     const result = reportSchema.safeParse({
       ...VALID,
-      lastSeenAt: "2026-07-01T10:00",
+      lastSeenAt: "2026-07-01T10:00:00Z",
     });
 
     expect(result.success).toBe(false);
@@ -60,6 +62,64 @@ describe("reportSchema", () => {
   it("rejects a description too short to help anyone", () => {
     expect(
       reportSchema.safeParse({ ...VALID, description: "lost" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("lastSeenAt", () => {
+  /**
+   * These are the regression tests for the bug the old schema had: it accepted
+   * a `datetime-local` string with no offset and let `Date.parse` resolve it in
+   * the server's zone. On Vercel (UTC) a reporter in India filling in their own
+   * local time was five and a half hours "in the future", so the form rejected
+   * its own default value — and the suite did not notice, because it only ever
+   * ran on a machine whose zone happened to be IST.
+   */
+  it("rejects a datetime-local string, which carries no timezone", () => {
+    const result = reportSchema.safeParse({
+      ...VALID,
+      lastSeenAt: "2026-06-14T18:30",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts the same wall-clock time from either side of UTC", () => {
+    for (const offset of ["+05:30", "-07:00", "Z"]) {
+      const result = reportSchema.safeParse({
+        ...VALID,
+        lastSeenAt: `2026-06-14T18:30:00${offset}`,
+      });
+
+      expect(result.success, offset).toBe(true);
+    }
+  });
+
+  /**
+   * The case that broke in production: 00:36 IST on the 6th is 19:06 UTC on the
+   * 5th — in the past — but reads as "tomorrow" to a server running in UTC.
+   */
+  it("accepts a reporter's local 'just now' from east of UTC", () => {
+    vi.setSystemTime(new Date("2026-06-15T19:06:00Z"));
+
+    const result = reportSchema.safeParse({
+      ...VALID,
+      lastSeenAt: "2026-06-16T00:36:00+05:30",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a date too old to be a sighting", () => {
+    expect(
+      reportSchema.safeParse({ ...VALID, lastSeenAt: "1998-01-01T10:00:00Z" })
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects something that is not a date at all", () => {
+    expect(
+      reportSchema.safeParse({ ...VALID, lastSeenAt: "yesterday" }).success,
     ).toBe(false);
   });
 });

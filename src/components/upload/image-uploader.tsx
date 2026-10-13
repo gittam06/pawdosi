@@ -16,7 +16,8 @@ type SignResponse = {
   cloudName: string;
   apiKey: string;
   timestamp: number;
-  folder: string;
+  /** Server-chosen, server-signed. Sent back verbatim or the upload fails. */
+  publicId: string;
   signature: string;
 };
 
@@ -136,7 +137,8 @@ export function ImageUploader({
       upload.append("file", file);
       upload.append("api_key", sign.apiKey);
       upload.append("timestamp", String(sign.timestamp));
-      upload.append("folder", sign.folder);
+      // The signature covers this id, so it cannot be altered here.
+      upload.append("public_id", sign.publicId);
       upload.append("signature", sign.signature);
 
       const uploadResponse = await fetch(

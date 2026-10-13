@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -10,9 +10,15 @@ import { Input } from "@/components/ui/input";
 /**
  * Submits to /search rather than filtering in place: results are a page you
  * can link to, and the server does the query.
+ *
+ * The id comes from `useId()` because this renders more than once per page —
+ * the header carries one and /search carries another. A hardcoded id made both
+ * `<label for>` attributes point at whichever input came first in the DOM, so
+ * the search page's own box had no accessible name at all.
  */
 export function PetSearch({ className }: { className?: string }) {
   const router = useRouter();
+  const inputId = useId();
   const [query, setQuery] = useState("");
 
   return (
@@ -26,7 +32,7 @@ export function PetSearch({ className }: { className?: string }) {
           router.push(`/search?q=${encodeURIComponent(term)}`);
       }}
     >
-      <label htmlFor="pet-search" className="sr-only">
+      <label htmlFor={inputId} className="sr-only">
         Search pets
       </label>
       <Search
@@ -34,7 +40,7 @@ export function PetSearch({ className }: { className?: string }) {
         aria-hidden
       />
       <Input
-        id="pet-search"
+        id={inputId}
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}

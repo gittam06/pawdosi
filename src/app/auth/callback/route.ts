@@ -13,12 +13,29 @@ import { createClient } from "@/lib/supabase/server";
  * Supporting both means a changed email template cannot silently break signup.
  */
 
+/**
+ * As in `@/actions/auth`: resolve rather than pattern-match, so a value like
+ * `/\evil.com` cannot become another origin. This route happens to concatenate
+ * `next` onto an absolute origin, which already contained the damage — but the
+ * guard should not depend on that staying true.
+ */
+const LOCAL_BASE = "http://redirect.invalid";
+
 function safeNext(value: string | null): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return "/onboarding";
+  const fallback = "/onboarding";
+  if (!value || !value.startsWith("/")) return fallback;
+
+  let resolved: URL;
+
+  try {
+    resolved = new URL(value, LOCAL_BASE);
+  } catch {
+    return fallback;
   }
 
-  return value;
+  if (resolved.origin !== LOCAL_BASE) return fallback;
+
+  return `${resolved.pathname}${resolved.search}${resolved.hash}`;
 }
 
 export async function GET(request: Request) {

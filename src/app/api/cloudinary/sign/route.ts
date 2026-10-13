@@ -7,8 +7,10 @@ import { signUpload } from "@/lib/cloudinary";
 /**
  * Issues a short-lived signature for a direct browser → Cloudinary upload.
  *
- * The secret never leaves the server, and the signature covers the folder, so
- * a caller cannot redirect the upload somewhere else in the account.
+ * The secret never leaves the server, and the signature covers the whole
+ * `public_id` — including the caller's own user id — so a caller can neither
+ * redirect the upload elsewhere in the account nor land it under another
+ * user's prefix.
  */
 
 const bodySchema = z.object({
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    return NextResponse.json(signUpload(parsed.data.folder));
+    return NextResponse.json(signUpload(parsed.data.folder, user.id));
   } catch (error) {
     console.error("Failed to sign Cloudinary upload", error);
 

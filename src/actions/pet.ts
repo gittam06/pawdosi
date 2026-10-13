@@ -11,7 +11,11 @@ import {
   type ActionState,
 } from "@/lib/action-state";
 import { requireOnboardedProfile } from "@/lib/auth";
-import { deleteAsset, verifyUploadedImage } from "@/lib/cloudinary";
+import {
+  deleteAsset,
+  deleteOwnedAsset,
+  verifyUploadedImage,
+} from "@/lib/cloudinary";
 import { countPetsByOwner } from "@/lib/pets";
 import { buildSlug } from "@/lib/slug";
 import { createClient } from "@/lib/supabase/server";
@@ -181,10 +185,14 @@ export async function updatePetAvatarAction(
 
   if (!parsed.success) return failure("That upload could not be read.");
 
-  const asset = await verifyUploadedImage(parsed.data.publicId, "pet");
+  const asset = await verifyUploadedImage(
+    parsed.data.publicId,
+    "pet",
+    profile.id,
+  );
 
   if (!asset.ok) {
-    await deleteAsset(parsed.data.publicId);
+    await deleteOwnedAsset(parsed.data.publicId, "pet", profile.id);
     return failure(asset.reason);
   }
 
@@ -212,7 +220,7 @@ export async function updatePetAvatarAction(
 
   if (error || !data) {
     // Never leave behind an asset we accepted but could not record.
-    await deleteAsset(parsed.data.publicId);
+    await deleteOwnedAsset(parsed.data.publicId, "pet", profile.id);
     return error
       ? writeFailed(error, "save pet photo")
       : failure("That pet no longer exists.");
