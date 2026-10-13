@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 
+import { searchNavItem } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
 import { MainNav } from "@/components/layout/main-nav";
@@ -24,7 +26,22 @@ export async function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2">
           <MainNav />
+
+          {/* The real search box from `lg`, where it fits. Between `md` and
+              `lg` the header has no room for a 176px input, so search becomes
+              an icon pointing at the page — the tab bar covers phones. */}
           <PetSearch className="hidden lg:block" />
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            asChild
+            className="hidden md:inline-flex lg:hidden"
+          >
+            <Link href={searchNavItem.href} aria-label="Search pets">
+              <Search aria-hidden />
+            </Link>
+          </Button>
+
           <ThemeToggle />
 
           {profile ? (
